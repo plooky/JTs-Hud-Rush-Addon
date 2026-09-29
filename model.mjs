@@ -1,4 +1,5 @@
 import { buildRushRadar, parseVector } from './radar.mjs';
+import { applyManagerAssignments, managerTeamForSide } from './assignments.mjs';
 
 // JT sends complete GSI snapshots. Never merge previously/added into current state.
 export const number = value => typeof value === 'number' && Number.isFinite(value) ? value : null;
@@ -34,7 +35,7 @@ export function rushRoundLabel(map = {}, phase = '') {
   }
   return 'RUSH';
 }
-export function normalize(payload = {}, previous = null) {
+export function normalize(payload = {}, previous = null, assignments = null) {
   const map = payload.map || {};
   const isRush = map.mode === 'rush';
   const phase = map.phase === 'gameover' ? 'gameover' : payload.phase_countdowns?.phase || payload.round?.phase || map.phase || 'waiting';
@@ -61,6 +62,7 @@ export function normalize(payload = {}, previous = null) {
         equipment: equipment.filter(w => w.type !== 'Grenade'),
         inventory: equipment.map(w => w.name) };
     }).sort((a, b) => (a.slot === 0 ? 10 : a.slot ?? 99) - (b.slot === 0 ? 10 : b.slot ?? 99) || a.id.localeCompare(b.id));
+  if (assignments) players = applyManagerAssignments(players, assignments);
   // GSI can briefly omit or replay a dead player's health after the death packet.
   // Keep a confirmed death through the same active round so the card cannot flash alive.
   const sameActiveRound = previous?.isRush && isRush && previous.map === map.name &&
@@ -78,6 +80,7 @@ export function normalize(payload = {}, previous = null) {
   const team = side => {
     const data = map[side === 'CT' ? 'team_ct' : 'team_t'] || {};
     const members = players.filter(p => p.side === side);
+    const managerTeam = assignments ? managerTeamForSide(side, players, assignments) : null;
     const utility = {};
     let hasUtility = false;
     for (const member of members) for (const grenade of member.grenades) {
@@ -85,7 +88,8 @@ export function normalize(payload = {}, previous = null) {
       utility[grenade.id] = (utility[grenade.id] || 0) + grenade.quantity;
       hasUtility = true;
     }
-    return { side, name: data.name || (side === 'CT' ? 'Counter-Terrorists' : 'Terrorists'),
+    return { side, name: managerTeam?.name || data.name || (side === 'CT' ? 'Counter-Terrorists' : 'Terrorists'),
+      logo: managerTeam?.logo || '',
       score: number(data.score), players: members,
       alive: members.length && members.every(p => p.health !== null) ? members.filter(p => p.health > 0).length : null,
       timeoutsRemaining: number(data.timeouts_remaining), utility: hasUtility ? utility : null };

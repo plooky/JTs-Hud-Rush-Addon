@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.0
+
+- Load current-match teams and player records from JT Hud Manager.
+- Use manager team names and logos throughout the scoreboard, announcements, timeouts and match results.
+- Use manager player names and portraits in roster cards and the observed-player panel.
+- Match real players by SteamID and assign bots deterministically by observer slot within each selected team roster.
+
 ## 1.7.6
 
 - Give CT and T round-winner cards symmetric team-color gradients and matching team-color borders on both outer edges.

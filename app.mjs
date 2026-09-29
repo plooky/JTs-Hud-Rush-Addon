@@ -1,4 +1,5 @@
 import { normalize } from './model.mjs';
+import { emptyManagerAssignments, loadManagerAssignments } from './assignments.mjs';
 import { updateMarkup, changes, presentationChanges } from './motion.mjs';
 import { loadDefaultTheme } from './theme.mjs';
 import { view } from './view.mjs';
@@ -10,6 +11,9 @@ let latest = null, received = 0, connected = false, hidden = false;
 let lastMarkup = '', previousGame = null;
 let gameoverSince = null;
 let settings = {};
+let managerAssignments = emptyManagerAssignments();
+let assignmentRefresh = null;
+let assignmentMap = '';
 const damageTotals = new Map();
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let theme;
@@ -57,7 +61,7 @@ function playPresentationMotion(before, game) {
 function render() {
   const completed = latest?.map?.mode === 'rush' && latest?.map?.phase === 'gameover';
   const fresh = connected && received > 0 && (performance.now() - received < 10000 || completed);
-  const game = normalize(fresh ? latest : {}, previousGame);
+  const game = normalize(fresh ? latest : {}, previousGame, managerAssignments);
   const show = fresh && game.isRush;
   let status = !connected ? 'Connecting to JT Hud Manager' : !fresh ? 'Waiting for live game data' : !game.isRush ? 'Waiting for a RUSH match' : !game.hasRoster ? 'Waiting for spectator data' : game.count !== 6 ? `Spectator roster · ${game.count} / 6 players` : '';
   if (connected && received && !fresh) status = 'Game feed paused · waiting for fresh data';
@@ -108,6 +112,17 @@ function accept(payload) {
   if (!payload || typeof payload !== 'object') return;
   latest = payload;
   received = performance.now();
+  const nextMap = payload.map?.name || '';
+  if (nextMap !== assignmentMap) refreshManagerAssignments(nextMap);
+}
+async function refreshManagerAssignments(activeMap = latest?.map?.name || '') {
+  if (preview || assignmentRefresh) return assignmentRefresh;
+  assignmentMap = activeMap;
+  assignmentRefresh = loadManagerAssignments({ activeMap }).then(value => {
+    managerAssignments = value;
+    render();
+  }).catch(() => {}).finally(() => { assignmentRefresh = null; });
+  return assignmentRefresh;
 }
 if (preview) {
   const { fixture, stressFixture } = await import('./preview.mjs');
@@ -120,6 +135,7 @@ if (preview) {
   socket.on('connect', () => { connected = true; received = 0; socket.emit('started'); });
   socket.on('readyToRegister', () => socket.emit('register', 'rush-hud', false, 'cs2', 'DEFAULT'));
   socket.on('update', accept);
+  socket.on('match', () => refreshManagerAssignments());
   socket.on('hud_config', data => { settings = data?.display_settings && typeof data.display_settings === 'object' ? data.display_settings : {}; lastMarkup = ''; render(); });
   socket.on('disconnect', () => { connected = false; latest = null; received = 0; render(); });
   socket.on('connect_error', () => { connected = false; render(); });
@@ -130,5 +146,9 @@ if (preview) {
   });
 } else root.textContent = 'Open this HUD through JT Hud Manager.';
 setInterval(render, 100);
+if (!preview) {
+  refreshManagerAssignments();
+  setInterval(() => refreshManagerAssignments(), 5000);
+}
 render();
 document.fonts.ready.then(() => { lastMarkup = ''; render(); });
