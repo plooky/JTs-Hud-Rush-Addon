@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.2
+
+- Render the radar overview on a 72% opacity surface so gameplay remains visible through its dark background.
+- Keep player markers, facing arrows and room text at full opacity for broadcast readability.
+
 ## 1.7.1
 
 - Keep confirmed player deaths latched through missing or stale same-round GSI health updates, preventing dead cards from briefly returning to full opacity.
