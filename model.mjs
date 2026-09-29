@@ -34,14 +34,14 @@ export function rushRoundLabel(map = {}, phase = '') {
   }
   return 'RUSH';
 }
-export function normalize(payload = {}) {
+export function normalize(payload = {}, previous = null) {
   const map = payload.map || {};
   const isRush = map.mode === 'rush';
   const phase = map.phase === 'gameover' ? 'gameover' : payload.phase_countdowns?.phase || payload.round?.phase || map.phase || 'waiting';
   // RUSH free-camera packets use spectarget rather than the usual player.steamid.
   const observed = String(payload.player?.spectarget ?? payload.player?.steamid ?? '');
   const roster = payload.allplayers && typeof payload.allplayers === 'object' ? payload.allplayers : {};
-  const players = Object.entries(roster).filter(([, p]) => p && ['CT', 'T'].includes(p.team))
+  let players = Object.entries(roster).filter(([, p]) => p && ['CT', 'T'].includes(p.team))
     .map(([id, p]) => {
       const weapons = Object.values(p.weapons || {}).filter(Boolean);
       const active = weapons.find(w => w.state === 'active');
@@ -61,6 +61,15 @@ export function normalize(payload = {}) {
         equipment: equipment.filter(w => w.type !== 'Grenade'),
         inventory: equipment.map(w => w.name) };
     }).sort((a, b) => (a.slot === 0 ? 10 : a.slot ?? 99) - (b.slot === 0 ? 10 : b.slot ?? 99) || a.id.localeCompare(b.id));
+  // GSI can briefly omit or replay a dead player's health after the death packet.
+  // Keep a confirmed death through the same active round so the card cannot flash alive.
+  const sameActiveRound = previous?.isRush && isRush && previous.map === map.name &&
+    previous.round === number(map.round) && !['warmup', 'freezetime'].includes(phase);
+  if (sameActiveRound) {
+    const dead = new Set([...previous.ct.players, ...previous.t.players]
+      .filter(player => player.health === 0).map(player => player.id));
+    players = players.map(player => dead.has(player.id) ? { ...player, health: 0 } : player);
+  }
   const team = side => {
     const data = map[side === 'CT' ? 'team_ct' : 'team_t'] || {};
     const members = players.filter(p => p.side === side);

@@ -57,7 +57,7 @@ function playPresentationMotion(before, game) {
 function render() {
   const completed = latest?.map?.mode === 'rush' && latest?.map?.phase === 'gameover';
   const fresh = connected && received > 0 && (performance.now() - received < 10000 || completed);
-  const game = normalize(fresh ? latest : {});
+  const game = normalize(fresh ? latest : {}, previousGame);
   const show = fresh && game.isRush;
   let status = !connected ? 'Connecting to JT Hud Manager' : !fresh ? 'Waiting for live game data' : !game.isRush ? 'Waiting for a RUSH match' : !game.hasRoster ? 'Waiting for spectator data' : game.count !== 6 ? `Spectator roster · ${game.count} / 6 players` : '';
   if (connected && received && !fresh) status = 'Game feed paused · waiting for fresh data';

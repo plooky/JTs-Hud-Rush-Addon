@@ -38,6 +38,25 @@ test('missing roster replaces old roster; spectator and coach slots are not inve
   assert.equal(normalize({ map: fixture.map, allplayers: {} }).count, 0);
   assert.equal(normalize({ allplayers: { a: { team: 'SPECTATOR' } } }).count, 0);
 });
+test('confirmed deaths stay latched through stale same-round GSI updates', () => {
+  const deadRaw = structuredClone(fixture);
+  deadRaw.allplayers.ct2.state.health = 0;
+  const dead = normalize(deadRaw);
+  const missingHealth = structuredClone(deadRaw);
+  delete missingHealth.allplayers.ct2.state.health;
+  const retainedMissing = normalize(missingHealth, dead);
+  assert.equal(retainedMissing.ct.players.find(player => player.id === 'ct2').health, 0);
+  assert.equal(retainedMissing.ct.alive, 1);
+  assert.equal(retainedMissing.radar.markers.find(player => player.id === 'ct2').dead, true);
+  const staleHealth = structuredClone(deadRaw);
+  staleHealth.allplayers.ct2.state.health = 64;
+  assert.equal(normalize(staleHealth, dead).ct.players.find(player => player.id === 'ct2').health, 0);
+  staleHealth.phase_countdowns.phase = 'freezetime';
+  assert.equal(normalize(staleHealth, dead).ct.players.find(player => player.id === 'ct2').health, 64);
+  staleHealth.phase_countdowns.phase = 'live';
+  staleHealth.map.round += 1;
+  assert.equal(normalize(staleHealth, dead).ct.players.find(player => player.id === 'ct2').health, 64);
+});
 test('mode detection does not mistake another 3v3 match for RUSH', () => {
   assert.equal(normalize({ ...fixture, map: { mode: 'competitive', name: 'rush_001' } }).isRush, false);
 });

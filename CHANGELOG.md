@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.1
+
+- Keep confirmed player deaths latched through missing or stale same-round GSI health updates, preventing dead cards from briefly returning to full opacity.
+- Lock the dead-card opacity against inherited JT animations while preserving its skull reveal.
+
 ## 1.7.0
 
 - Add a room-aware RUSH radar using the overview textures and calibration shipped with CS2.
