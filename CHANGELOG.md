@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0
+
+- Use the installed default JT HUD's theme, team logos and portraits with horizontal 3v3 cards, weapon silhouettes, round-kill cards, a central observer panel and an alive counter.
+- Preserve native death/skull effects and delayed health trails while fitting names and images within the 1440p layout.
+- Display RUSH rounds 1–14 and the 7–7 tiebreak instead of competitive round rules.
+- Include Lexogrine weapon/status SVGs with their MIT notice; load the default theme and portraits from the manager.
+
 ## 1.2.0
 
 - Adapt JT-style panel entrances, team gradients, damage numbers, delayed health trails, death transitions and score/observer change animations to the RUSH layout.

@@ -1,93 +1,78 @@
+/* Default JT HUD supplies the visual theme. These overrides fit 3v3 safely at 1440p. */
+@font-face { font-family: Oswald; font-style: normal; font-weight: 200 700; src: url('./assets/fonts/Oswald.ttf') format('truetype'); font-display: swap; }
+:root { --color-ct: #00bfff; --color-t: #f4c628; --main-panel-color: #121214f2; --sub-panel-color: #121214f2; --radius: 8px; --color-moneys: #48ff00; }
 * { box-sizing: border-box; }
-html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
-body { font-family: 'Segoe UI', Arial, sans-serif; color: #f4f6fa; -webkit-font-smoothing: antialiased; }
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: transparent !important; }
+body { color: #fff; }
 #hud { position: absolute; inset: 0; pointer-events: none; }
-.stage { position: absolute; width: 2560px; height: 1440px; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(var(--scale, 1)); }
-.stage { transition: opacity .3s ease, visibility .3s ease; }
-.hidden { opacity: 0; visibility: hidden; }
-.CT { --team: #83d0f3; --team-dark: #153548; }
-.T { --team: #f0c277; --team-dark: #48341f; }
-.stage img, .stage svg { display: block; max-width: 100%; max-height: 100%; object-fit: contain; flex-shrink: 0; }
+.stage { position: absolute; width: 2560px; height: 1440px; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(var(--scale, 1)); transition: opacity .3s, visibility .3s; }
+.stage.hidden { opacity: 0; visibility: hidden; }
+.stage img { object-fit: contain; }
 .fit-text { min-width: 0; overflow-wrap: anywhere; }
-small { font-size: 12px; font-weight: 600; }
-
-/* Native 1440p canvas: 48px side/bottom safe area, compact top-center score. */
-.scoreboard { position: absolute; top: 40px; left: 740px; width: 1080px; height: 112px; display: grid; grid-template-columns: minmax(0, 1fr) 82px 180px 82px minmax(0, 1fr); background: #0c1422f2; box-shadow: 0 4px 18px #0003; border: 1px solid #ffffff14; border-radius: 6px; }
-.team-name { min-width: 0; display: grid; align-content: center; padding: 16px 24px; text-align: center; color: var(--team); border-top: 3px solid var(--team); }
-.team-name span { display: block; max-height: 62px; font-size: 27px; line-height: 1.15; font-weight: 700; }
-.score { display: grid; place-content: center; font-size: 48px; font-weight: 750; color: var(--team); background: var(--team-dark); font-variant-numeric: tabular-nums; }
-.match { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 3px; padding: 10px 12px; }
-.mode { font-size: 12px; letter-spacing: 3px; font-weight: 800; line-height: 16px; }
-.mode span { color: #93a3bb; letter-spacing: 1px; margin-left: 5px; }
-.timer { font-size: 36px; font-weight: 700; line-height: 42px; font-variant-numeric: tabular-nums; }
-.phase { font-size: 12px; line-height: 17px; letter-spacing: 1px; text-transform: uppercase; color: #bac7da; text-align: center; }
-.status { position: absolute; top: 164px; left: 50%; transform: translateX(-50%); max-width: 760px; padding: 8px 16px; background: #0c1422e8; color: #c3cee0; font-size: 15px; line-height: 22px; text-align: center; border-radius: 4px; }
-
-/* Three small cards per lower corner; the crosshair and upper sides stay clear. */
-.roster { position: absolute; bottom: 64px; width: 392px; }
-.roster.CT { left: 48px; }
-.roster.T { right: 48px; }
-.roster-title { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 14px; min-height: 46px; padding: 8px 16px; color: var(--team); background: #0c1422ed; font-size: 14px; line-height: 18px; font-weight: 700; text-transform: uppercase; border-top: 3px solid var(--team); border-radius: 4px 4px 0 0; }
-.roster-title .fit-text { max-height: 36px; }
-.alive { white-space: nowrap; }
-.player { position: relative; margin-top: 8px; height: 130px; background: #0c1422ed; padding: 12px 16px 14px; border-left: 3px solid transparent; border-radius: 3px; }
-.player.observed { border-left-color: var(--team); background: var(--team-dark); box-shadow: inset 0 0 0 1px #ffffff2e; }
-.player-heading { display: grid; grid-template-columns: 16px minmax(0, 1fr) 72px; align-items: center; gap: 6px; height: 50px; }
-.player-name { display: block; max-height: 50px; font-size: 24px; line-height: 1.2; font-weight: 650; }
-.slot { color: var(--team); font-size: 14px; font-variant-numeric: tabular-nums; }
-.health { text-align: right; white-space: nowrap; font-size: 27px; font-weight: 750; color: var(--team); font-variant-numeric: tabular-nums; }
-.loadout { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; height: 26px; margin-top: 2px; font-size: 16px; line-height: 20px; font-weight: 600; }
-.weapon { max-height: 26px; }
-.money { color: #d6e3d0; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.details { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; height: 22px; margin-top: 3px; color: #afbed2; font-size: 13px; line-height: 18px; }
-.armor, .stats { white-space: nowrap; font-variant-numeric: tabular-nums; }
-.stats small { color: #8093ad; font-size: 10px; margin-left: 3px; }
-.flash { font-size: 10px; color: #ffe7ab; text-align: center; }
-.health-track { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #ffffff0c; }
-.health-track i { display: block; height: 100%; background: var(--team); transition: width .1s linear; }
-.dead { background: #0c1422ce; color: #93a1b5; }
-.dead .health { color: #93a1b5; font-size: 18px; }
-.dead .loadout, .dead .details { color: #93a1b5; }
-.empty-player { height: 130px; margin-top: 8px; display: grid; place-items: center; background: #0c1422a6; color: #a9b8ce; border: 1px dashed #ffffff14; border-radius: 3px; font-size: 15px; }
-
-/* Observer information stays below the action, with separate weapon/ammo columns. */
-.observed-player { position: absolute; bottom: 48px; left: 1000px; width: 560px; padding: 14px 22px 16px; background: #0c1422ed; border-bottom: 3px solid var(--team); border-radius: 4px; }
-.observed-heading { display: grid; grid-template-columns: 100px minmax(0, 1fr); align-items: center; gap: 14px; min-height: 38px; }
-.eyebrow { font-size: 11px; line-height: 16px; letter-spacing: 2px; color: var(--team); }
-.observed-heading strong { display: block; max-height: 58px; font-size: 28px; line-height: 1.2; font-weight: 650; }
-.observed-loadout { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 24px; min-height: 32px; margin-top: 6px; font-size: 17px; }
-.observed-loadout .fit-text { max-height: 40px; }
-.ammo { font-size: 26px; line-height: 32px; color: var(--team); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.ammo small { font-size: 16px; color: #b7c5d8; }
-.inventory { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 7px; font-size: 12px; line-height: 18px; color: #9bacc3; }
-.inventory span { max-width: 100%; overflow-wrap: anywhere; }
-footer { position: absolute; bottom: 28px; left: 48px; max-width: 392px; font-size: 11px; line-height: 16px; font-weight: 800; letter-spacing: 2px; text-shadow: 0 1px 4px #000; }
-footer span { color: #8cc8b4; }
-footer small { margin-left: 14px; font-size: 10px; letter-spacing: 1px; color: #b8c5d7; }
-.preview-tag { position: absolute; top: 218px; left: 50%; transform: translateX(-50%); padding: 10px 18px; background: #784013; color: #fff; font-size: 14px; line-height: 20px; font-weight: 700; letter-spacing: 2px; }
-
-/* JT-style motion, adapted to the RUSH safe areas; no game assets required. */
-.team-name.CT { background: linear-gradient(90deg, #153548, #0c1422 80%); }
-.team-name.T { background: linear-gradient(-90deg, #48341f, #0c1422 80%); }
-.score { background: linear-gradient(160deg, var(--team-dark), #0c1422); text-shadow: 0 0 18px color-mix(in srgb, var(--team) 25%, transparent); }
-.scoreboard { animation: scoreboard-in .5s cubic-bezier(.23,1,.32,1) both; }
-.roster { --enter-x: -24px; animation: roster-in .5s cubic-bezier(.23,1,.32,1) both; }
-.roster.T { --enter-x: 24px; }
-.roster-title { background: linear-gradient(110deg, var(--team-dark), #0c1422 80%); }
-.player { box-shadow: 0 4px 15px #0004; transition: background-color .3s ease, border-color .3s ease, opacity .3s ease; }
-.player.observed { background: linear-gradient(110deg, var(--team-dark), #0c1422 95%); }
-.player.dead { opacity: .62; }
-.player .health { transition: color .3s ease; }
-.health-track { height: 4px; overflow: hidden; border-radius: 0 0 3px 3px; }
-.health-track i { position: absolute; inset: 0 auto 0 0; height: 100%; }
-.health-track .health-fill { background: linear-gradient(90deg, var(--team-dark), var(--team)); transition: width .3s ease-out; }
-.health-track .health-trail { background: #ff4d64; transition: width .6s ease-out 1.2s; }
-.damage-number { position: absolute; right: 18px; top: 2px; z-index: 2; opacity: 0; color: #fff; font-size: 18px; font-weight: 800; text-shadow: 0 2px 6px #000; }
-.observed-player { background: linear-gradient(115deg, var(--team-dark), #0c1422 72%); box-shadow: 0 8px 24px #0005; animation: observer-in .35s ease-out both; }
-.observed-player::before { content: ''; position: absolute; top: 0; left: 22px; right: 22px; height: 1px; background: linear-gradient(90deg, transparent, var(--team), transparent); opacity: .6; }
-@keyframes scoreboard-in { from { opacity: 0; transform: translateY(-18px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes roster-in { from { opacity: 0; transform: translateX(var(--enter-x)); } to { opacity: 1; transform: translateX(0); } }
-@keyframes observer-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-@media (prefers-reduced-motion: reduce) {
-  .stage, .stage *, .stage *::before { animation: none !important; transition: none !important; }
-}
+.hud-icon { display: inline-block; width: 18px; height: 18px; flex-shrink: 0; background: currentColor; mask: var(--icon) center / contain no-repeat; -webkit-mask: var(--icon) center / contain no-repeat; }
+#matchbar { top: 24px; height: 96px; width: 1200px; }
+#matchbar .team { width: 504px; height: 96px; }
+#matchbar .team .logo { width: 90px; height: 90px; flex-shrink: 0; }
+#matchbar .team .logo img { max-width: 76px; max-height: 76px; }
+#matchbar .team-name { width: 306px; height: 96px; padding: 6px 10px; white-space: normal; overflow: visible; text-align: center; }
+#matchbar .team-name .fit-text { display: block; width: 100%; max-height: 76px; font-size: 30px; line-height: 1.1; }
+#matchbar .score-container { width: 108px; height: 96px; }
+#matchbar .score { font-size: 46px; }
+#matchbar #timer { width: 192px; height: 96px; flex-shrink: 0; }
+#matchbar #round_now { font-size: 18px; }
+#matchbar #round_timer_text { font-size: 42px; line-height: 1.2; }
+.rush-phase { position: absolute; top: 124px; left: 50%; transform: translateX(-50%); color: #ddd; background: #121214e8; padding: 3px 14px; border-radius: 0 0 5px 5px; font-size: 13px; letter-spacing: 1px; }
+.players_alive { top: 24px; right: 32px; }
+.status, .preview-tag { position: absolute; top: 166px; left: 50%; transform: translateX(-50%); padding: 7px 16px; background: #121214ed; border-radius: 4px; font-size: 16px; text-align: center; }
+.preview-tag { top: 210px; background: #784013; letter-spacing: 1px; }
+.teambox.layout-horizontal { bottom: 36px; gap: 10px; }
+.teambox.layout-horizontal.left { transform: translateX(-100%) translateX(-270px); }
+.teambox.layout-horizontal.right { transform: translateX(270px); }
+.teambox.layout-horizontal .player-horizontal-container { width: 196px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow { margin-top: 60px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-avatar-section { height: 52px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-avatar-section .avatar { width: 112px; height: 112px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-avatar-section .slot-pill { top: 8px; left: 7px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-info-section { padding: 0 8px 5px; gap: 4px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-info-section .username-row { align-items: center; min-height: 46px; gap: 5px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-info-section .username-row .name { font-size: 22px; max-height: 46px; line-height: 1.05; white-space: normal; text-overflow: clip; overflow: visible; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .health-armor-group { flex-shrink: 0; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .health-armor-group .hud-icon { width: 14px; height: 14px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-info-section .stats-row { flex-wrap: wrap; column-gap: 4px; row-gap: 2px; min-height: 23px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-info-section .stat-group { gap: 5px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-info-section .stat-item { font-size: 16px; white-space: nowrap; }
+.stat-item .hud-icon { width: 13px; height: 13px; color: var(--color-ct); }
+.T .stat-item .hud-icon { color: var(--color-t); }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-info-section .money { font-size: 17px; white-space: nowrap; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-weapons-section { height: 30px; }
+.main-weapon-container { width: 56%; min-width: 0; }
+.main-weapon-container img { width: 100%; height: 21px; object-position: left; filter: brightness(0) invert(1); }
+.grenade-strip { height: 20px; }
+.grenade-strip span { width: 16px; display: flex; align-items: center; }
+.grenade-strip img { width: 100%; height: 20px; filter: brightness(0) invert(1); }
+.grenade-strip .active { filter: drop-shadow(0 0 3px #48ff00); }
+.weapon-fallback { display: block; max-height: 24px; font-size: 14px; line-height: 1; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .damage-indicator { opacity: 0; animation: none; top: -66px; left: 4px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .round_kills_card { top: -44px; right: 4px; width: 22px; height: 34px; }
+.round_kills_card .hud-icon { width: 6px; height: 6px; }
+.teambox.layout-horizontal .player-horizontal-card.vertical-flow .round_kills_card .count { font-size: 18px; }
+.card-avatar-section.flashed .avatar { filter: brightness(4); }
+.card-avatar-section .avatar { transition: filter .5s ease-in; }
+.teambox.layout-horizontal .player-horizontal-container.dead .player-horizontal-card { max-height: none; }
+.teambox.layout-horizontal .player-horizontal-container.dead .card-avatar-section .avatar .hud-icon { width: 100%; height: 100%; color: #b2b2b2; }
+.empty-player { width: 196px; height: 116px; display: grid; place-items: center; color: #aaa; border: 1px dashed #ffffff22; border-radius: 8px; background: #121214aa; font-size: 16px; }
+.observed { bottom: 64px; width: 480px; }
+.observed .avatar_container { width: 180px; height: 180px; top: -180px; }
+.observed .avatar_container .avatar img { object-fit: contain; }
+.observed .main_container { height: 66px; }
+.observed .info_container { min-width: 0; padding: 0 6px; }
+.observed .info_container .username { max-height: 56px; font-size: 26px; white-space: normal; text-overflow: clip; overflow: visible; }
+.observed .health_armor_container { width: 90px; flex-shrink: 0; }
+.observed .weapon_container { width: 100px; flex-shrink: 0; }
+.observed .health_armor_icon, .observed .ammo_icon { color: var(--color-ct); }
+.observed.T .health_armor_icon, .observed.T .ammo_icon { color: var(--color-t); }
+.observed .round_kills_card { right: 65px; }
+.observed .health-bar-red { position: absolute; left: 0; top: 0; height: 100%; background: #ff4d4d; transition: width .6s ease-out 1.5s; }
+.observed-weapon { height: 24px; margin-top: 6px; display: flex; justify-content: center; filter: drop-shadow(0 1px 3px #000); }
+.observed-weapon img { width: 90px; height: 22px; filter: brightness(0) invert(1); }
+@media (prefers-reduced-motion: reduce) { .stage, .stage *, .stage *::before { animation: none !important; transition: none !important; } }

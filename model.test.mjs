@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalize, clock } from './model.mjs';
+import { normalize, clock, rushRoundLabel } from './model.mjs';
 import { fixture } from './preview.mjs';
 
 test('six-player spectator feed and RUSH spectarget resolve correctly', () => {
@@ -46,4 +46,31 @@ test('timer uses only valid reported countdowns', () => {
   assert.equal(clock('60.1'), '1:01');
   assert.equal(clock('0'), '0:00');
   for (const value of [undefined, null, '', 'bad', -1]) assert.equal(clock(value), '—:—');
+});
+
+test('RUSH has fourteen regulation rounds and a 7-7 tiebreak, never competitive overtime', () => {
+  const map = { mode: 'rush', phase: 'live', round: 0, team_ct: { score: 0 }, team_t: { score: 0 } };
+  assert.equal(rushRoundLabel(map, 'live'), 'Round 1/14');
+  assert.equal(rushRoundLabel({ ...map, round: 13, team_ct: { score: 7 }, team_t: { score: 6 } }, 'live'), 'Round 14/14');
+  const tied = { ...map, round: 13, team_ct: { score: 7 }, team_t: { score: 7 } };
+  assert.equal(rushRoundLabel(tied, 'over'), 'Round 14/14');
+  assert.equal(rushRoundLabel({ ...tied, round: 14 }, 'freezetime'), 'Tiebreak');
+  assert.equal(rushRoundLabel({ ...tied, round: undefined }, 'live'), 'Tiebreak');
+  assert.equal(rushRoundLabel({ ...tied, round: 14 }, 'over'), 'Tiebreak');
+  assert.equal(rushRoundLabel({ ...tied, phase: 'gameover' }, 'over'), 'Match ended');
+  assert.equal(rushRoundLabel({ ...map, phase: 'warmup' }, 'warmup'), 'Warmup');
+  assert.equal(rushRoundLabel({ mode: 'rush' }), 'RUSH');
+  assert.equal(rushRoundLabel({ ...map, round: 24 }), 'RUSH');
+  assert.equal(rushRoundLabel({ ...map, mode: 'competitive' }, 'live'), '');
+});
+
+test('round kill cards use reported round kills, not cumulative match kills', () => {
+  const raw = structuredClone(fixture);
+  raw.allplayers.ct2.state.round_kills = 2;
+  delete raw.allplayers.ct1.state.round_kills;
+  const game = normalize(raw);
+  assert.equal(game.observed.roundKills, 2);
+  assert.equal(game.observed.kills, 7);
+  assert.equal(game.ct.players[0].roundKills, null);
+  assert.equal(game.observed.weaponId, 'awp');
 });

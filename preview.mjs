@@ -1,12 +1,12 @@
 // Explicit visual test fixture. This is never posted to JT Manager or CS2.
 const player = (name, team, slot, health, weapon, kills, money) => ({
   name, team, observer_slot: slot,
-  state: { health, armor: 100, helmet: true, money },
+  state: { health, armor: 100, helmet: true, money, round_kills: 0 },
   match_stats: { kills, assists: 2, deaths: 3 },
   weapons: { weapon_0: { name: `weapon_${weapon}`, state: 'active', type: 'Rifle', ammo_clip: 24, ammo_reserve: 60 } }
 });
 export const fixture = {
-  map: { mode: 'rush', name: 'rush_001', phase: 'live', team_ct: { score: 2 }, team_t: { score: 1 } },
+  map: { mode: 'rush', name: 'rush_001', phase: 'live', round: 3, team_ct: { score: 2 }, team_t: { score: 1 } },
   phase_countdowns: { phase: 'live', phase_ends_in: '43' },
   player: { spectarget: 'ct2' },
   allplayers: {
@@ -18,6 +18,7 @@ export const fixture = {
     t3: player('Player Six', 'T', 6, 26, 'ak47', 4, 1900)
   }
 };
+fixture.allplayers.ct2.state.round_kills = 2;
 
 // Layout QA only: long names, full inventories, three-digit stats and flash state.
 export const stressFixture = structuredClone(fixture);

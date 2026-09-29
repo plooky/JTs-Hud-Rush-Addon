@@ -1,6 +1,6 @@
 # JTs-Hud-Rush-Addon
 
-A CS2 RUSH spectator HUD for [JT Hud Manager](https://github.com/JohnTimmermann/JTs-Hud), designed for a transparent 2560 × 1440 broadcast source. Install it as a custom HUD in the existing manager.
+A CS2 RUSH spectator HUD for [JT Hud Manager](https://github.com/JohnTimmermann/JTs-Hud), using the default JT HUD's visual theme with RUSH-specific statistics. Designed for a transparent 2560 × 1440 broadcast source. Install it as a custom HUD in the existing manager.
 
 [Download rush-hud.zip](https://github.com/plooky/JTs-Hud-Rush-Addon/releases/latest/download/rush-hud.zip) · [Releases and checksums](https://github.com/plooky/JTs-Hud-Rush-Addon/releases)
 
@@ -23,17 +23,19 @@ http://localhost:1349/huds/rush-hud/index.html
 
 The background is transparent. The layout scales proportionally to other 16:9 sizes. If your manager uses a different address, use its HUD URL. Keep the downloaded filename `rush-hud.zip`, because the manager uses it for the HUD's installation ID.
 
-End users do not need Node.js or a separate addon server. Remove the addon through the manager's HUDs tab.
+End users do not need Node.js or a separate addon server. Keep the manager's default HUD installed: the addon loads its stylesheet, team logos and character portraits from the same manager. Asset filenames are discovered automatically; the tested theme is the July 13, 2026 release. A future incompatible theme may require an addon update. Remove the addon through the manager's HUDs tab.
 
 ## Displayed data
 
-- CT/T rosters, reported team scores, game phase and countdown.
+- Three-player CT/T rosters, reported team scores, game phase and countdown.
+- RUSH rounds 1–14 and a **Tiebreak** label at 7–7. No competitive /24 counter, overtime sets, halftime or loss-bonus calculations.
 - Health, armor, money, active weapons, kills, assists and deaths.
 - Observed-player highlighting and ammunition.
-- JT-style sliding panels, team gradients, floating damage numbers, delayed red health trails, death transitions and score/observer change animations. Animations respect reduced-motion preferences.
+- The default JT HUD's horizontal portrait cards, team logos, central observed-player portrait, weapon silhouettes, alive counter, gradients, skull/death transitions and delayed red health trails. Floating damage numbers and score/observer transitions preserve their state across updates. Animations respect reduced-motion preferences.
+- Round-kill cards use reported `state.round_kills`, separately from cumulative match kills.
 - Waiting states for missing rosters and unavailable values. Old data clears after ten seconds without updates or immediately on disconnection.
 
-The 1440p layout has 48px side margins, compact lower-corner rosters, a top scoreboard and a bottom observer panel. The center between the rosters is 1680px wide. Long names wrap and shrink within their panels.
+The 1440p layout follows the default HUD: a top-center scoreboard and bottom-center observer panel flanked by horizontal team cards. The cards are enlarged for readable 3v3 data, with 36px bottom spacing. Long names wrap and shrink within their panels. Portraits and weapon images preserve their aspect ratio. The center of gameplay stays clear.
 
 ## Limits and troubleshooting
 
@@ -48,7 +50,7 @@ Verified with a local RUSH spectator session: warmup, active play, score changes
 Use Node.js 20 or later and PowerShell. From this folder:
 
 ```powershell
-node --test model.test.mjs
+node --test model.test.mjs motion.test.mjs
 powershell -NoProfile -File .\Build-RushHud.ps1
 ```
 
@@ -84,4 +86,4 @@ Actual bot count depends on available slots. These commands require control of t
 
 ## License and credits
 
-Addon code is provided under the [MIT license](LICENSE). JT Hud Manager is a separate project by its upstream authors. This repository does not bundle the manager or Valve game assets.
+Addon code is provided under the [MIT license](LICENSE). Weapon and status SVGs come from the Lexogrine/OpenHud React HUD template and retain their [MIT notice](assets/LICENSE-Lexogrine.txt). The bundled Oswald font is distributed under its [SIL Open Font License](assets/fonts/OFL.txt). JT Hud Manager is a separate project by its upstream authors. Its default theme and portraits are loaded from the installed manager and are not redistributed in this package.
