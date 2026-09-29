@@ -2,7 +2,7 @@ param([switch]$Install)
 $ErrorActionPreference = 'Stop'
 Push-Location $PSScriptRoot
 try {
-    & node --test assignments.test.mjs model.test.mjs motion.test.mjs radar.test.mjs theme.test.mjs
+    & node --test assignments.test.mjs model.test.mjs motion.test.mjs radar.test.mjs theme.test.mjs view.test.mjs
     if ($LASTEXITCODE -ne 0) { throw 'HUD tests failed.' }
     & node --check app.mjs
     if ($LASTEXITCODE -ne 0) { throw 'HUD syntax check failed.' }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.0
+
+- Preserve all six player cards when JT Hud Manager remaps different players onto the same observer slot.
+- Include the original GSI player name in the death-card identity so rekeyed duplicates are still removed without collapsing distinct teammates.
+- Show each player's primary, secondary, knife, equipment and grenades inside the player-card health strip.
+- Keep health bars stable while weapon, ammo and equipment updates animate only the inventory icons.
+- Hide the observed-player ammo counter whenever the active item does not report firearm ammunition.
+
 ## 1.8.1
 
 - Deduplicate transitional GSI roster entries by team and observer slot so one player cannot produce multiple dead cards.

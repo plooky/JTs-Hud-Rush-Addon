@@ -35,9 +35,16 @@ export function rushRoundLabel(map = {}, phase = '') {
   }
   return 'RUSH';
 }
-const rosterIdentity = player => player.slot === null
-  ? `${player.side}:id:${player.id}`
-  : `${player.side}:slot:${player.slot}`;
+const rosterIdentity = player => {
+  const sourceName = String(player.sourceName || '').trim().toLocaleLowerCase();
+  return player.slot === null || !sourceName
+    ? `${player.side}:id:${player.id}`
+    : `${player.side}:slot:${player.slot}:name:${sourceName}`;
+};
+const secondaryTypes = new Set(['Pistol']);
+const equipmentTypes = new Set(['Knife', 'Grenade', 'Equipment', 'C4']);
+const inventoryRank = weapon => equipmentTypes.has(weapon.type) ? 2 : secondaryTypes.has(weapon.type) ? 1 : 0;
+const inventoryCategory = weapon => equipmentTypes.has(weapon.type) ? 'equipment' : secondaryTypes.has(weapon.type) ? 'secondary' : 'primary';
 function dedupeRoster(players) {
   const unique = new Map();
   for (const player of players) {
@@ -61,21 +68,24 @@ export function normalize(payload = {}, previous = null, assignments = null) {
     .map(([id, p]) => {
       const weapons = Object.values(p.weapons || {}).filter(Boolean);
       const active = weapons.find(w => w.state === 'active');
-      const equipment = weapons.filter(w => w.type !== 'Knife').map(w => ({
+      const equipment = weapons.map((w, index) => ({
         id: w.name?.replace(/^weapon_/, '') || '', name: weaponName(w.name), type: w.type || '',
-        active: w.state === 'active', quantity: number(w.ammo_reserve)
-      }));
-      return { id, name: p.name || 'Unknown player', side: p.team,
+        active: w.state === 'active', quantity: number(w.ammo_reserve), index,
+        category: inventoryCategory(w)
+      })).sort((a, b) => inventoryRank(a) - inventoryRank(b) || a.index - b.index);
+      const showsAmmo = !!active && number(active.ammo_clip) !== null && !equipmentTypes.has(active.type);
+      return { id, sourceName: p.name || '', name: p.name || 'Unknown player', side: p.team,
         slot: number(p.observer_slot), health: number(p.state?.health), armor: number(p.state?.armor),
         helmet: p.state?.helmet === true, money: number(p.state?.money), roundKills: number(p.state?.round_kills),
         kills: number(p.match_stats?.kills), assists: number(p.match_stats?.assists),
         deaths: number(p.match_stats?.deaths), observed: observed === id,
         position: parseVector(p.position), forward: parseVector(p.forward),
-        weapon: weaponName(active?.name), weaponId: active?.name?.replace(/^weapon_/, '') || '', ammo: number(active?.ammo_clip),
-        reserve: number(active?.ammo_reserve), flashed: (number(p.state?.flashed) || 0) > 0,
+        weapon: weaponName(active?.name), weaponId: active?.name?.replace(/^weapon_/, '') || '',
+        ammo: number(active?.ammo_clip), reserve: number(active?.ammo_reserve), showsAmmo,
+        flashed: (number(p.state?.flashed) || 0) > 0,
         grenades: equipment.filter(w => w.type === 'Grenade'),
-        equipment: equipment.filter(w => w.type !== 'Grenade'),
-        inventory: equipment.map(w => w.name) };
+        equipment: equipment.filter(w => w.type !== 'Grenade'), inventoryItems: equipment,
+        inventory: equipment.map(w => `${w.id}:${w.active ? 1 : 0}:${w.quantity ?? ''}`) };
     });
   players = dedupeRoster(players)
     .sort((a, b) => (a.slot === 0 ? 10 : a.slot ?? 99) - (b.slot === 0 ? 10 : b.slot ?? 99) || a.id.localeCompare(b.id));

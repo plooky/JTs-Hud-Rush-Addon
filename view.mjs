@@ -18,6 +18,9 @@ function weapon(id, name, theme) {
 function killCard(p, theme) {
   return p.roundKills > 0 ? `<div data-key="round-kills" class="round_kills_card" title="Kills this round"><div class="card_corner top_left">${icon('kills', theme)}</div><div class="card_center"><div class="count">${stat(p.roundKills)}</div></div><div class="card_corner bottom_right">${icon('kills', theme)}</div></div>` : '';
 }
+function inventoryItems(p, theme, className = 'inventory-items') {
+  return `<div class="${className}">${p.inventoryItems.map(item => `<span class="inventory-item ${item.category} ${item.active ? 'active' : ''}" title="${escape(item.name)}">${weapon(item.id, item.name, theme)}${item.type === 'Grenade' && item.quantity !== null && item.quantity > 1 ? `<b>${item.quantity}</b>` : ''}</span>`).join('')}</div>`;
+}
 function playerCard(p, theme) {
   const dead = p.health === 0;
   return `<article data-key="player-${escape(p.id)}" class="player-horizontal-container ${dead ? 'dead' : ''}">
@@ -27,7 +30,7 @@ function playerCard(p, theme) {
       <div class="card-info-section"><div class="username-row"><strong class="name fit-text" data-min-size="11">${escape(p.name)}</strong><div class="health-armor-group" title="Armor ${stat(p.armor)}${p.helmet ? ', helmet' : ''}"><span class="armor-container">${p.armor > 0 ? icon(p.helmet ? 'helmet' : 'armor', theme) : ''}</span><span class="health-text">${stat(p.health)}</span></div></div>
         <div class="stats-row"><div class="stat-group" title="Kills / deaths"><span class="stat-item">${icon('kills', theme)}${stat(p.kills)}</span><span class="stat-item">${icon('skull', theme)}${stat(p.deaths)}</span></div><span class="money">${money(p.money)}</span></div>
       </div>
-      <div class="card-weapons-section"><div class="health-bar-red" style="width:${hp(p)}%"></div><div class="health-bar" style="width:${hp(p)}%"></div><div class="equipment-strip">${p.equipment.map(item => `<span class="${item.active ? 'active' : ''}">${weapon(item.id, item.name, theme)}</span>`).join('')}</div><div class="grenade-strip">${p.grenades.map(g => `<span class="${g.active ? 'active' : ''}">${weapon(g.id, g.name, theme)}${g.quantity !== null && g.quantity > 1 ? `<b>${g.quantity}</b>` : ''}</span>`).join('')}</div></div>
+      <div class="card-weapons-section"><div class="health-bar-red" style="width:${hp(p)}%"></div><div class="health-bar" style="width:${hp(p)}%"></div>${inventoryItems(p, theme)}</div>
     </div>
   </article>`;
 }
@@ -82,6 +85,6 @@ export function view(game, { show, status, preview, hidden, theme, results = fal
     ${status ? `<div data-key="status" class="status">${escape(status)}</div>` : ''}
     ${preview ? '<div data-key="preview" class="preview-tag">PREVIEW · SYNTHETIC TEST DATA</div>' : ''}
     ${show ? roster(game.ct, theme, 'left') + roster(game.t, theme, 'right') : ''}
-    ${show && p ? `<section data-key="observed" class="observed ${p.side}">${killCard(p, theme)}<div class="avatar_container"><div class="avatar"><img src="${escape(portrait(p, theme, true))}" alt=""></div></div><div class="main_container"><div class="health_armor_container"><div class="health_armor_icon">${p.armor > 0 ? icon(p.helmet ? 'helmet' : 'armor', theme) : ''}</div><div class="health_value">${stat(p.health)}</div></div><div class="info_container"><strong class="username fit-text" data-min-size="12">${escape(p.name)}</strong></div><div class="weapon_container"><div class="ammo_container"><div class="ammo_values"><span class="clip">${stat(p.ammo)}</span><span class="divider">/</span><span class="reserve">${stat(p.reserve)}</span></div><span class="ammo_icon">${icon('bullets', theme)}</span></div></div></div><div class="health_bar_container"><div class="health-bar-red" style="width:${hp(p)}%"></div><div class="health_bar_bg" style="width:${hp(p)}%"></div></div><div class="observed-inventory">${p.equipment.map(item => `<span class="${item.active ? 'active' : ''}">${weapon(item.id, item.name, theme)}</span>`).join('')}${p.grenades.map(item => `<span>${weapon(item.id, item.name, theme)}</span>`).join('')}</div></section>` : ''}
+    ${show && p ? `<section data-key="observed" class="observed ${p.side}">${killCard(p, theme)}<div class="avatar_container"><div class="avatar"><img src="${escape(portrait(p, theme, true))}" alt=""></div></div><div class="main_container"><div class="health_armor_container"><div class="health_armor_icon">${p.armor > 0 ? icon(p.helmet ? 'helmet' : 'armor', theme) : ''}</div><div class="health_value">${stat(p.health)}</div></div><div class="info_container"><strong class="username fit-text" data-min-size="12">${escape(p.name)}</strong></div><div class="weapon_container">${p.showsAmmo ? `<div class="ammo_container"><div class="ammo_values"><span class="clip">${stat(p.ammo)}</span><span class="divider">/</span><span class="reserve">${stat(p.reserve)}</span></div><span class="ammo_icon">${icon('bullets', theme)}</span></div>` : ''}</div></div><div class="health_bar_container"><div class="health-bar-red" style="width:${hp(p)}%"></div><div class="health_bar_bg" style="width:${hp(p)}%"></div></div>${inventoryItems(p, theme, 'observed-inventory inventory-items')}</section>` : ''}
   </div>`;
 }
