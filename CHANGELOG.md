@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.1
+
+- Deduplicate transitional GSI roster entries by team and observer slot so one player cannot produce multiple dead cards.
+- Preserve the original dead-card identity when CS2 rekeys a player during the round, preventing a replacement card from entering beside it.
+
 ## 1.8.0
 
 - Load current-match teams and player records from JT Hud Manager.

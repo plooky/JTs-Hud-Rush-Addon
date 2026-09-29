@@ -63,6 +63,32 @@ test('confirmed deaths stay latched through stale same-round GSI updates', () =>
   staleHealth.map.round += 1;
   assert.equal(normalize(staleHealth, dead).ct.players.find(player => player.id === 'ct2').health, 64);
 });
+test('rekeyed and overlapping GSI entries cannot duplicate a dead roster slot', () => {
+  const deadRaw = structuredClone(fixture);
+  deadRaw.allplayers.ct2.state.health = 0;
+  const dead = normalize(deadRaw);
+
+  const rekeyed = structuredClone(deadRaw);
+  rekeyed.allplayers['ct2-rekeyed'] = structuredClone(rekeyed.allplayers.ct2);
+  rekeyed.allplayers['ct2-rekeyed'].state.health = 100;
+  delete rekeyed.allplayers.ct2;
+  rekeyed.player.spectarget = 'ct2-rekeyed';
+  const retained = normalize(rekeyed, dead);
+  const slotTwo = retained.ct.players.filter(player => player.slot === 2);
+  assert.equal(retained.count, 6);
+  assert.equal(slotTwo.length, 1);
+  assert.equal(slotTwo[0].id, 'ct2');
+  assert.equal(slotTwo[0].health, 0);
+  assert.equal(slotTwo[0].observed, true);
+
+  const overlapping = structuredClone(deadRaw);
+  overlapping.allplayers['ct2-rekeyed'] = structuredClone(overlapping.allplayers.ct2);
+  overlapping.allplayers['ct2-rekeyed'].state.health = 100;
+  const deduped = normalize(overlapping, dead);
+  assert.equal(deduped.count, 6);
+  assert.equal(deduped.ct.players.filter(player => player.slot === 2).length, 1);
+  assert.equal(deduped.ct.players.find(player => player.slot === 2).health, 0);
+});
 test('mode detection does not mistake another 3v3 match for RUSH', () => {
   assert.equal(normalize({ ...fixture, map: { mode: 'competitive', name: 'rush_001' } }).isRush, false);
 });

@@ -35,6 +35,21 @@ export function rushRoundLabel(map = {}, phase = '') {
   }
   return 'RUSH';
 }
+const rosterIdentity = player => player.slot === null
+  ? `${player.side}:id:${player.id}`
+  : `${player.side}:slot:${player.slot}`;
+function dedupeRoster(players) {
+  const unique = new Map();
+  for (const player of players) {
+    const key = rosterIdentity(player);
+    const existing = unique.get(key);
+    if (!existing || (!existing.observed && player.observed) ||
+        (!existing.observed && !player.observed && existing.health !== 0 && player.health === 0)) {
+      unique.set(key, player);
+    }
+  }
+  return [...unique.values()];
+}
 export function normalize(payload = {}, previous = null, assignments = null) {
   const map = payload.map || {};
   const isRush = map.mode === 'rush';
@@ -61,18 +76,26 @@ export function normalize(payload = {}, previous = null, assignments = null) {
         grenades: equipment.filter(w => w.type === 'Grenade'),
         equipment: equipment.filter(w => w.type !== 'Grenade'),
         inventory: equipment.map(w => w.name) };
-    }).sort((a, b) => (a.slot === 0 ? 10 : a.slot ?? 99) - (b.slot === 0 ? 10 : b.slot ?? 99) || a.id.localeCompare(b.id));
+    });
+  players = dedupeRoster(players)
+    .sort((a, b) => (a.slot === 0 ? 10 : a.slot ?? 99) - (b.slot === 0 ? 10 : b.slot ?? 99) || a.id.localeCompare(b.id));
   if (assignments) players = applyManagerAssignments(players, assignments);
   // GSI can briefly omit or replay a dead player's health after the death packet.
   // Keep a confirmed death through the same active round so the card cannot flash alive.
   const sameActiveRound = previous?.isRush && isRush && previous.map === map.name &&
     previous.round === number(map.round) && !['warmup', 'freezetime'].includes(phase);
   if (sameActiveRound) {
-    const dead = new Map([...previous.ct.players, ...previous.t.players]
-      .filter(player => player.health === 0).map(player => [player.id, player]));
-    const present = new Set(players.map(player => player.id));
-    players = players.map(player => dead.has(player.id) ? { ...player, health: 0 } : player);
-    for (const player of dead.values()) if (!present.has(player.id)) {
+    const dead = dedupeRoster([...previous.ct.players, ...previous.t.players].filter(player => player.health === 0));
+    const deadById = new Map(dead.map(player => [player.id, player]));
+    const deadByRoster = new Map(dead.map(player => [rosterIdentity(player), player]));
+    const retained = new Set();
+    players = players.map(player => {
+      const prior = deadById.get(player.id) || deadByRoster.get(rosterIdentity(player));
+      if (!prior) return player;
+      retained.add(prior.id);
+      return { ...player, id: prior.id, health: 0, observed: player.observed || observed === prior.id };
+    });
+    for (const player of dead) if (!retained.has(player.id)) {
       players.push({ ...player, observed: observed === player.id });
     }
     players.sort((a, b) => (a.slot === 0 ? 10 : a.slot ?? 99) - (b.slot === 0 ? 10 : b.slot ?? 99) || a.id.localeCompare(b.id));
