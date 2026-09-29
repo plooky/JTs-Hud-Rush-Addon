@@ -34,7 +34,7 @@ function playPresentationMotion(before, game) {
     animate(root.querySelector('.rush-radar'), [{ opacity: 0, transform: 'translate(-35px, -20px) scale(.92)' }, { opacity: 1, transform: 'translate(0, 0) scale(1)' }], { duration: 600, delay: 120, easing: ease, fill: 'backwards' });
   }
   if (motion.phase) {
-    if (game.phase === 'freezetime') animateAll('.team-econ-panel.show', [{ opacity: 0, transform: 'translateY(-18px) scale(.97)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 420, easing: ease }, 90);
+    if (game.phase === 'freezetime') animateAll('.team-econ-panel.show', [{ opacity: 0, transform: 'translateY(-18px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 420, easing: ease }, 90);
     if (game.phase === 'over') animate(root.querySelector('.win_announcement.show'), [{ opacity: 0, transform: 'translate(-50%, -24px) scale(.88)' }, { opacity: 1, transform: 'translate(-50%, 4px) scale(1.03)', offset: .72 }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)' }], { duration: 620, easing: ease });
     if (game.phase === 'paused') animate(root.querySelector('#pause.show'), [{ opacity: 0, transform: 'translate(-50%, -30px) scale(.94)' }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)' }], { duration: 500, easing: ease });
     if (['timeout_ct', 'timeout_t'].includes(game.phase)) animate(root.querySelector('#timeout.show'), [{ opacity: 0, transform: 'translate(-50%, -30px) scale(.94)' }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)' }], { duration: 500, easing: ease });

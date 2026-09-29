@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.5
+
+- Align the T utility panel's right edge with the T scoreboard edge and the CT utility panel's left edge with the CT scoreboard edge throughout their entrance animation.
+
 ## 1.7.4
 
 - Retain a confirmed dead player's card when delayed GSI snapshots temporarily omit that player or replay stale live health during the same round.

@@ -98,6 +98,7 @@ body { color: #fff; }
 .observed-inventory span.active { opacity: 1; filter: drop-shadow(0 0 4px #fff8); }
 .observed-inventory img { max-width: 48px; height: 22px; }
 .matchbar-team-panels { top: 128px; width: 1200px; }
+.matchbar-panel-spacer { width: auto; flex: 1 1 auto; }
 .team-econ-panel { width: 430px; padding: 9px 12px; }
 .team-econ-panel .team-econ-header { min-height: 31px; }
 .team-econ-panel .title { font-size: 12px; letter-spacing: 1px; white-space: nowrap; }
