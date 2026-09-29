@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.3
+
+- Remove the assists counter from live player cards while retaining assists on match-end K/A/D results.
+
 ## 1.6.2
 
 - Remove the complete RUSH survivor/status badge beneath the matchbar.

@@ -59,7 +59,7 @@ export function presentationChanges(previous, current) {
       entered: !before,
       died: !!before && before.health !== 0 && player.health === 0,
       revived: !!before && before.health === 0 && (player.health ?? 0) > 0,
-      stats: !!before && ['kills', 'assists', 'deaths', 'money'].some(key => before[key] !== player[key]),
+      stats: !!before && ['kills', 'deaths', 'money'].some(key => before[key] !== player[key]),
       equipment: !!before && (before.weaponId !== player.weaponId || before.ammo !== player.ammo || before.reserve !== player.reserve || before.inventory.join('|') !== player.inventory.join('|')),
       roundKills: !!before && before.roundKills !== player.roundKills
     };

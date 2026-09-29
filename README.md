@@ -32,7 +32,7 @@ The animated end-of-match screen appears three seconds after CS2 reports gameove
 - Three-player CT/T rosters, reported team scores, game phase and countdown.
 - The scoreboard has no separate RUSH status or survivor-count badge beneath it, keeping that area clear.
 - RUSH rounds 1–14 and a **Tiebreak** label at 7–7. No competitive /24 counter, overtime sets, halftime or loss-bonus calculations.
-- Health, armor, money, active and carried weapons, grenades, kills, assists and deaths.
+- Live player cards show health, armor, money, active and carried weapons, grenades, kills and deaths. Assists remain available on the match-end K/A/D results screen.
 - Observed-player highlighting and ammunition.
 - The default JT HUD's horizontal portrait cards, team logos, central observed-player portrait, weapon silhouettes, gradients, skull/death transitions and delayed red health trails. Floating damage numbers and score/observer transitions preserve their state across updates. Animations respect reduced-motion preferences. The top-right player counter is omitted.
 - Element-level motion follows live events: the matchbar, player cards and observed panel enter in sequence; round changes flip the timer; scores pop; players animate on entry, death and revival; statistics, equipment and round-kill cards react to changes; and utility, round-win, pause and timeout panels animate both in and out. Routine countdown ticks do not restart animations.
