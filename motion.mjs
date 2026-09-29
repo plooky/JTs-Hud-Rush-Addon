@@ -56,6 +56,7 @@ export function presentationChanges(previous, current) {
     const before = oldPlayers.get(player.id);
     return {
       id: player.id,
+      dead: player.health === 0,
       entered: !before,
       died: !!before && before.health !== 0 && player.health === 0,
       revived: !!before && before.health === 0 && (player.health ?? 0) > 0,

@@ -50,6 +50,7 @@ test('presentation changes identify UI events without treating countdown ticks a
   assert.equal(events.phase, true);
   assert.deepEqual(events.scores, ['ct']);
   assert.equal(events.players.find(player => player.id === 'ct2').died, true);
+  assert.equal(events.players.find(player => player.id === 'ct2').dead, true);
   assert.equal(events.players.find(player => player.id === 'ct2').stats, true);
   assert.equal(events.players.find(player => player.id === 'ct1').equipment, true);
 });

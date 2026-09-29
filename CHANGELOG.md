@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.4
+
+- Remove overlapping brightness animations from dead player cards so their death opacity remains stable after the initial JT transition.
+
 ## 1.6.3
 
 - Remove the assists counter from live player cards while retaining assists on match-end K/A/D results.

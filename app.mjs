@@ -44,11 +44,10 @@ function playPresentationMotion(before, game) {
   for (const event of motion.players || []) {
     const card = [...root.querySelectorAll('.player-horizontal-container')].find(node => node.dataset.key === `player-${event.id}`);
     if (event.entered && !motion.initial) animate(card, [{ opacity: 0, transform: 'translateY(55px) scale(.9)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 520, easing: ease });
-    if (event.died) animate(card, [{ filter: 'grayscale(0) brightness(1.8)', transform: 'scale(1.04)' }, { filter: 'grayscale(1) brightness(.85)', transform: 'scale(1)' }], { duration: 600, easing: ease });
     if (event.revived) animate(card, [{ opacity: .35, filter: 'grayscale(1) brightness(2)' }, { opacity: 1, filter: 'grayscale(0) brightness(1)' }], { duration: 600, easing: ease });
-    if (event.stats) animate(card?.querySelector('.card-info-section'), [{ filter: 'brightness(1)' }, { filter: 'brightness(1.8)', offset: .4 }, { filter: 'brightness(1)' }], { duration: 420, easing: 'ease-out' });
-    if (event.equipment) animate(card?.querySelector('.card-weapons-section'), [{ transform: 'translateY(5px)', opacity: .35 }, { transform: 'translateY(0)', opacity: 1 }], { duration: 300, easing: ease });
-    if (event.roundKills) animate(card?.querySelector('.round_kills_card'), [{ opacity: 0, transform: 'rotate(8deg) scale(.4)' }, { opacity: 1, transform: 'rotate(8deg) scale(1.18)', offset: .7 }, { opacity: 1, transform: 'rotate(8deg) scale(1)' }], { duration: 420, easing: ease });
+    if (event.stats && !event.dead) animate(card?.querySelector('.card-info-section'), [{ filter: 'brightness(1)' }, { filter: 'brightness(1.8)', offset: .4 }, { filter: 'brightness(1)' }], { duration: 420, easing: 'ease-out' });
+    if (event.equipment && !event.dead) animate(card?.querySelector('.card-weapons-section'), [{ transform: 'translateY(5px)', opacity: .35 }, { transform: 'translateY(0)', opacity: 1 }], { duration: 300, easing: ease });
+    if (event.roundKills && !event.dead) animate(card?.querySelector('.round_kills_card'), [{ opacity: 0, transform: 'rotate(8deg) scale(.4)' }, { opacity: 1, transform: 'rotate(8deg) scale(1.18)', offset: .7 }, { opacity: 1, transform: 'rotate(8deg) scale(1)' }], { duration: 420, easing: ease });
   }
   if (motion.observed) animate(root.querySelector('.observed'), [{ opacity: .2, transform: 'translate(-50%, 28px) scale(.96)' }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)' }], { duration: 420, easing: ease });
   if (motion.observedVitals) animate(root.querySelector('.observed .main_container'), [{ filter: 'brightness(1.7)' }, { filter: 'brightness(1)' }], { duration: 360, easing: 'ease-out' });

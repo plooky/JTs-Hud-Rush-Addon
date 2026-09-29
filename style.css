@@ -26,7 +26,7 @@ body { color: #fff; }
 .teambox.layout-horizontal { bottom: 36px; gap: 10px; }
 .teambox.layout-horizontal.left { transform: translateX(-100%) translateX(-270px); }
 .teambox.layout-horizontal.right { transform: translateX(270px); }
-.teambox.layout-horizontal .player-horizontal-container { width: 196px; }
+.teambox.layout-horizontal .player-horizontal-container { width: 196px; transition: opacity .3s ease, filter .3s ease, transform .3s ease; }
 .teambox.layout-horizontal .player-horizontal-card.vertical-flow { margin-top: 60px; }
 .teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-avatar-section { height: 52px; }
 .teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-avatar-section .avatar { width: 112px; height: 112px; }
