@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.3
+
+- Remove the radar caption bar and room label, leaving only the bordered playable radar map.
+
 ## 1.7.2
 
 - Render the radar overview on a 72% opacity surface so gameplay remains visible through its dark background.
