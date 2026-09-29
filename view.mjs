@@ -40,7 +40,7 @@ export function view(game, { show, status, preview, hidden, theme }) {
   const p = game.observed;
   return `<div class="stage ${hidden ? 'hidden' : ''}">
     <header data-key="scoreboard" id="matchbar">${teamHeader(game.ct, theme, 'left', show)}<div id="timer"><div id="round_now">${show ? escape(game.roundLabel) : 'RUSH'}</div><div id="round_timer_text">${show ? game.time : '—:—'}</div></div>${teamHeader(game.t, theme, 'right', show)}</header>
-    <div data-key="phase" class="rush-phase">RUSH 3V3 · ${show ? escape(phases[game.phase] || game.phase.replaceAll('_', ' ')) : 'AWAITING FEED'}</div>
+    <div data-key="phase" class="rush-phase">RUSH ${show ? stat(game.ct.alive) : '—'}V${show ? stat(game.t.alive) : '—'} · ${show ? escape(phases[game.phase] || game.phase.replaceAll('_', ' ')) : 'AWAITING FEED'}</div>
     ${status ? `<div data-key="status" class="status">${escape(status)}</div>` : ''}
     ${preview ? '<div data-key="preview" class="preview-tag">PREVIEW · SYNTHETIC TEST DATA</div>' : ''}
     ${show ? roster(game.ct, theme, 'left') + roster(game.t, theme, 'right') : ''}

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2
+
+- Replace the fixed RUSH 3V3 label with the current CT-versus-T alive count during all phases. Missing or stale data displays dashes.
+
 ## 1.3.1
 
 - Remove the top-right player counter.
