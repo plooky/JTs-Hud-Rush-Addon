@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.6
+
+- Give CT and T round-winner cards symmetric team-color gradients and matching team-color borders on both outer edges.
+
 ## 1.7.5
 
 - Align the T utility panel's right edge with the T scoreboard edge and the CT utility panel's left edge with the CT scoreboard edge throughout their entrance animation.
