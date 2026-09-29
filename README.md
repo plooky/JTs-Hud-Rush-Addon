@@ -58,10 +58,10 @@ Edit **images.json** in the HUD folder. On Windows the installed folder is norma
 - `portraits.CT` and `portraits.T`: roster portraits. `null` uses the installed default JT portrait.
 - `observedPortraits.CT` and `observedPortraits.T`: central observer portraits. `null` uses the corresponding roster portrait.
 - `logos.CT` and `logos.T`: scoreboard logos. `null` uses the default JT logo.
-- `icons`: skull, kills, armor, helmet and bullets. Each has a `src` path and `tint` option. Set `tint` to `false` for a full-color image; `true` uses the image's transparency as a team-colored silhouette.
+- `icons`: skull, kills, armor, helmet and bullets. Each can be a direct path string or an object with `src` and `tint`. Set `tint` to `false` for a full-color image; `true` uses the image's transparency as a team-colored silhouette.
 - `weapons`: optional overrides keyed by GSI weapon name without `weapon_`, such as `ak47` or `flashbang`. Each accepts `src` and `tint`; `false` preserves colors, `true` renders a white silhouette. Existing weapon SVGs can also be replaced directly in `assets/weapons/`.
 
-For example, change `portraits.CT` to `"./assets/custom/ct.png"`, or add `"ak47": { "src": "./assets/custom/ak47.png", "tint": false }` inside `weapons`. PNG, WebP and SVG files work; transparent backgrounds are recommended. Images use contain sizing so their aspect ratio is preserved without cropping.
+For example, change `portraits.CT` to `"./assets/custom/ct.jpg"`, set `icons.skull` to `"./assets/custom/skull.png"`, or add `"ak47": { "src": "./assets/custom/ak47.svg", "tint": true }` inside `weapons`. Supported Chromium formats include **SVG, PNG, JPG/JPEG, WebP, GIF, AVIF, BMP and ICO**. Animated GIF and animated WebP files retain their animation. Use `tint: false` for JPG and other full-color images because they do not provide a useful transparency mask. Images use contain sizing so their aspect ratio is preserved without cropping.
 
 ## Development
 

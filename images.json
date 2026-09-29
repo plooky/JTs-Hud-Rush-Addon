@@ -3,7 +3,7 @@
   "observedPortraits": { "CT": null, "T": null },
   "logos": { "CT": null, "T": null },
   "icons": {
-    "skull": { "src": "./assets/icons/icon_skull_default.svg", "tint": true },
+    "skull": { "src": "./assets/custom/Skull-4x.png", "tint": true },
     "kills": { "src": "./assets/icons/icon_kills.svg", "tint": true },
     "armor": { "src": "./assets/icons/icon_armor_full_default.svg", "tint": true },
     "helmet": { "src": "./assets/icons/icon_armor_helmet_default.svg", "tint": true },

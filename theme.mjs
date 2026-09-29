@@ -1,4 +1,12 @@
 // Reuse the manager's installed default theme rather than redistribute its bundle.
+export const CUSTOM_IMAGE_FORMATS = ['svg', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'avif', 'bmp', 'ico'];
+
+export function imageDescriptor(value, baseURL) {
+  const config = typeof value === 'string' ? { src: value } : value;
+  if (!config || typeof config.src !== 'string' || !config.src.trim()) throw new Error('Custom image entries need a non-empty src path');
+  return { src: new URL(config.src, baseURL).href, tint: config.tint === true };
+}
+
 export async function loadDefaultTheme() {
   const base = new URL('/huds/default/index.html', location.origin);
   const response = await fetch(base);
@@ -30,14 +38,14 @@ export async function loadDefaultTheme() {
     if (!r.ok) throw new Error('Image configuration could not load');
     return r.json();
   });
-  const imageURL = path => new URL(path, location.href).href;
-  const portraits = { CT: images.portraits?.CT || asset('default_CT'), T: images.portraits?.T || asset('default_T') };
-  const descriptor = value => ({ src: imageURL(value.src), tint: value.tint === true });
+  const descriptor = value => imageDescriptor(value, location.href);
+  const imageURL = (value, fallback) => descriptor(value || fallback).src;
+  const portraits = { CT: imageURL(images.portraits?.CT, asset('default_CT')), T: imageURL(images.portraits?.T, asset('default_T')) };
   return {
-    portraits: Object.fromEntries(Object.entries(portraits).map(([side, path]) => [side, imageURL(path)])),
-    observedPortraits: Object.fromEntries(['CT', 'T'].map(side => [side, imageURL(images.observedPortraits?.[side] || portraits[side])])),
-    logos: { CT: imageURL(images.logos?.CT || asset('logo_CT_default')), T: imageURL(images.logos?.T || asset('logo_T_default')) },
-    icons: Object.fromEntries(Object.entries(images.icons).map(([key, value]) => [key, descriptor(value)])),
+    portraits,
+    observedPortraits: Object.fromEntries(['CT', 'T'].map(side => [side, imageURL(images.observedPortraits?.[side], portraits[side])])),
+    logos: { CT: imageURL(images.logos?.CT, asset('logo_CT_default')), T: imageURL(images.logos?.T, asset('logo_T_default')) },
+    icons: Object.fromEntries(Object.entries(images.icons || {}).map(([key, value]) => [key, descriptor(value)])),
     weapons: new Map([
       ...weapons.map(id => [id, descriptor({ src: `./assets/weapons/${id}.svg`, tint: true })]),
       ...Object.entries(images.weapons || {}).map(([id, value]) => [id, descriptor(value)])
