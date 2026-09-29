@@ -31,17 +31,14 @@ function playPresentationMotion(before, game) {
     animateAll('.teambox.left .player-horizontal-container', [{ opacity: 0, transform: 'translate(-45px, 70px) scale(.94)' }, { opacity: 1, transform: 'translate(0, 0) scale(1)' }], { duration: 620, easing: ease, fill: 'backwards' }, 85);
     animateAll('.teambox.right .player-horizontal-container', [{ opacity: 0, transform: 'translate(45px, 70px) scale(.94)' }, { opacity: 1, transform: 'translate(0, 0) scale(1)' }], { duration: 620, easing: ease, fill: 'backwards' }, 85);
     animate(root.querySelector('.observed'), [{ opacity: 0, transform: 'translate(-50%, 70px) scale(.94)' }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)' }], { duration: 680, delay: 180, easing: ease, fill: 'backwards' });
-    animate(root.querySelector('.rush-phase'), [{ opacity: 0, transform: 'translateX(-50%) translateY(-10px) scale(.85)' }, { opacity: 1, transform: 'translateX(-50%) translateY(0) scale(1)' }], { duration: 420, delay: 300, easing: ease, fill: 'backwards' });
   }
   if (motion.phase) {
-    animate(root.querySelector('.rush-phase'), [{ transform: 'translateX(-50%) scale(.88)', opacity: .35 }, { transform: 'translateX(-50%) scale(1.08)', opacity: 1, offset: .55 }, { transform: 'translateX(-50%) scale(1)', opacity: 1 }], { duration: 420, easing: ease });
     if (game.phase === 'freezetime') animateAll('.team-econ-panel.show', [{ opacity: 0, transform: 'translateY(-18px) scale(.97)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 420, easing: ease }, 90);
     if (game.phase === 'over') animate(root.querySelector('.win_announcement.show'), [{ opacity: 0, transform: 'translate(-50%, -24px) scale(.88)' }, { opacity: 1, transform: 'translate(-50%, 4px) scale(1.03)', offset: .72 }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)' }], { duration: 620, easing: ease });
     if (game.phase === 'paused') animate(root.querySelector('#pause.show'), [{ opacity: 0, transform: 'translate(-50%, -30px) scale(.94)' }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)' }], { duration: 500, easing: ease });
     if (['timeout_ct', 'timeout_t'].includes(game.phase)) animate(root.querySelector('#timeout.show'), [{ opacity: 0, transform: 'translate(-50%, -30px) scale(.94)' }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)' }], { duration: 500, easing: ease });
   }
   if (motion.round) animate(root.querySelector('#timer'), [{ transform: 'perspective(400px) rotateX(-75deg)', opacity: .2 }, { transform: 'perspective(400px) rotateX(0)', opacity: 1 }], { duration: 520, easing: ease });
-  if (motion.alive) animate(root.querySelector('.rush-phase'), [{ filter: 'brightness(2.2)', transform: 'translateX(-50%) scale(1.15)' }, { filter: 'brightness(1)', transform: 'translateX(-50%) scale(1)' }], { duration: 500, easing: ease });
   if (motion.teams) animateAll('#matchbar .team-name', [{ opacity: 0, transform: 'translateY(-10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 420, easing: ease });
   for (const side of motion.scores || []) animate(root.querySelector(`.score.${side.toUpperCase()}`), [{ filter: 'brightness(2.5)', transform: 'scale(.75)' }, { filter: 'brightness(1.7)', transform: 'scale(1.3)', offset: .55 }, { filter: 'brightness(1)', transform: 'scale(1)' }], { duration: 650, easing: ease });
   for (const event of motion.players || []) {

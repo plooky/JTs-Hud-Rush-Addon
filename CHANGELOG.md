@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.2
+
+- Remove the complete RUSH survivor/status badge beneath the matchbar.
+
 ## 1.4.0
 
 - Add a default-style animated RUSH results screen with winning team, team logos, final scores and player K/A/D.

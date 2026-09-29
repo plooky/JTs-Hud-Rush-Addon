@@ -6,10 +6,10 @@ Compared against the installed July 13, 2026 default HUD bundle and its panel.js
 
 - Default visual theme, Oswald font, team logos and portraits, horizontal player cards, observed-player panel, weapon/grenade silhouettes, health/armor, money, K/A/D, ammunition and round-kill cards.
 - Damage numbers, delayed health trails, flash brightness, skull/death transitions, observer highlight and score effects.
-- RUSH round labels, 7-7 tiebreak and live survivor counts under the scoreboard. The separate top-right count remains removed as requested.
+- RUSH round labels and the 7-7 tiebreak. Separate survivor/status badges are removed as requested.
 - The default-style animated end-of-match screen shows the winner, final scores, replaceable team logos and three-player K/A/D lists. It appears three seconds after gameover and remains while connected until the game state changes. Missing/tied results do not fabricate a winner. An explicit completed round-15 tiebreak winner can resolve a retained 7-7 score.
 - Version 1.5.0 adds explicit round-win announcements, pause/timeout overlays, reported timeout counts, buy-phase team utility totals, tournament branding, CT/T colors, corner/model/advertisement/compact-matchbar controls, fuller carried equipment strips and accumulated rapid-hit damage numbers.
-- Version 1.6.0 adds event-driven motion to the matchbar, rosters, player entry/death/revival, observed player, phase/survivor label, timer, scores, statistics, equipment, round-kill cards, utility panels, round announcements, pauses and timeouts. Keyed elements stay mounted for exit transitions, and countdown-only updates remain quiet.
+- Version 1.6.0 adds event-driven motion to the matchbar, rosters, player entry/death/revival, observed player, timer, scores, statistics, equipment, round-kill cards, utility panels, round announcements, pauses and timeouts. Keyed elements stay mounted for exit transitions, and countdown-only updates remain quiet.
 - Local image overrides, reduced motion, stale live-data clearing and disconnect cleanup.
 
 ## Missing features that can be adapted

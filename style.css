@@ -21,7 +21,6 @@ body { color: #fff; }
 #matchbar #timer { width: 192px; height: 96px; flex-shrink: 0; }
 #matchbar #round_now { font-size: 18px; }
 #matchbar #round_timer_text { font-size: 42px; line-height: 1.2; }
-.rush-phase { position: absolute; top: 124px; left: 50%; transform: translateX(-50%); color: #ddd; background: #121214e8; padding: 3px 14px; border-radius: 0 0 5px 5px; font-size: 13px; letter-spacing: 1px; }
 .status, .preview-tag { position: absolute; top: 166px; left: 50%; transform: translateX(-50%); padding: 7px 16px; background: #121214ed; border-radius: 4px; font-size: 16px; text-align: center; animation: hud-pop-in .4s cubic-bezier(.22,1,.36,1) both; }
 .preview-tag { top: 210px; background: #784013; letter-spacing: 1px; }
 .teambox.layout-horizontal { bottom: 36px; gap: 10px; }

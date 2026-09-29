@@ -9,7 +9,6 @@ const icon = (name, theme) => {
   const src = escape(image.src.replaceAll("'", '%27'));
   return image.tint ? `<span class="hud-icon" aria-hidden="true" style="--icon:url('${src}')"></span>` : `<img class="hud-icon image-icon" src="${src}" alt="">`;
 };
-const phases = { warmup: 'Warmup', freezetime: 'Buy phase', live: 'Live', over: 'Round over', gameover: 'Match ended', paused: 'Paused', timeout_ct: 'CT timeout', timeout_t: 'T timeout' };
 function weapon(id, name, theme) {
   const image = theme.weapons.get(id);
   return image ? `<img class="weapon ${image.tint ? 'tint' : ''}" src="${escape(image.src)}" alt="${escape(name)}" title="${escape(name)}">` : `<span class="weapon-fallback fit-text" data-min-size="11">${escape(name)}</span>`;
@@ -66,7 +65,6 @@ export function view(game, { show, status, preview, hidden, theme, results = fal
   return `<div class="stage ${stageClasses}">
     ${show && results ? resultScreen(game, theme) : ''}
     <header data-key="scoreboard" id="matchbar" class="${settings.compact_matchbar && game.phase === 'live' ? 'compact-rush' : ''}">${teamHeader(game.ct, theme, 'left', show)}<div id="timer"><div id="round_now">${show ? escape(game.roundLabel) : 'RUSH'}</div><div id="round_timer_text">${show ? game.time : '—:—'}</div></div>${teamHeader(game.t, theme, 'right', show)}${tournament.length ? `<div id="tournament_info" class="show"><span class="tournament_name">${escape(settings.tournament_name || '')}</span>${tournament.length > 1 ? '<span class="tournament_separator">·</span>' : ''}<span class="tournament_stage">${escape(settings.tournament_stage || '')}</span></div>` : ''}</header>
-    <div data-key="phase" class="rush-phase">RUSH ${show ? stat(game.ct.alive) : '—'}V${show ? stat(game.t.alive) : '—'} · ${show ? escape(phases[game.phase] || game.phase.replaceAll('_', ' ')) : 'AWAITING FEED'}</div>
     ${show ? roundWin(game, theme) + interruption(game, theme) : ''}
     ${show ? `<div data-key="utility-panels" class="matchbar-team-panels">${utilityPanel(game.ct, theme, 'left', game.phase === 'freezetime' && !!game.ct.utility)}<div class="matchbar-panel-spacer"></div>${utilityPanel(game.t, theme, 'right', game.phase === 'freezetime' && !!game.t.utility)}</div>` : ''}
     ${status ? `<div data-key="status" class="status">${escape(status)}</div>` : ''}
