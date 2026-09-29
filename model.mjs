@@ -44,7 +44,7 @@ export function normalize(payload = {}) {
       score: number(data.score), players: members,
       alive: members.length && members.every(p => p.health !== null) ? members.filter(p => p.health > 0).length : null };
   };
-  return { isRush, map: map.name || '', phase, time: clock(payload.phase_countdowns?.phase_ends_in),
+  return { isRush, map: map.name || '', round: number(map.round), phase, time: clock(payload.phase_countdowns?.phase_ends_in),
     ct: team('CT'), t: team('T'), count: players.length,
     hasRoster: Object.hasOwn(payload, 'allplayers'), observed: players.find(p => p.observed) || null };
 }

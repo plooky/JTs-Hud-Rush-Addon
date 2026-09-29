@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+- Adapt JT-style panel entrances, team gradients, damage numbers, delayed health trails, death transitions and score/observer change animations to the RUSH layout.
+- Preserve rendered panels across GSI updates so timer changes do not restart animations.
+- Respect reduced-motion preferences and suppress damage effects on reconnects and round resets.
+
 ## 1.1.0
 
 First public release of JTs-Hud-Rush-Addon.

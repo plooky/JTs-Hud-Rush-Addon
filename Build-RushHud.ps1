@@ -2,14 +2,14 @@ param([switch]$Install)
 $ErrorActionPreference = 'Stop'
 Push-Location $PSScriptRoot
 try {
-    & node --test model.test.mjs
+    & node --test model.test.mjs motion.test.mjs
     if ($LASTEXITCODE -ne 0) { throw 'HUD tests failed.' }
     & node --check app.mjs
     if ($LASTEXITCODE -ne 0) { throw 'HUD syntax check failed.' }
     $outputDirectory = Join-Path $PSScriptRoot 'dist'
     New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
     $archive = Join-Path $outputDirectory 'rush-hud.zip'
-    Compress-Archive -Path index.html,hud.json,app.mjs,model.mjs,style.css,preview.mjs,README.md,LICENSE -DestinationPath $archive -Force
+    Compress-Archive -Path index.html,hud.json,app.mjs,model.mjs,motion.mjs,style.css,preview.mjs,README.md,LICENSE -DestinationPath $archive -Force
     $archiveHash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
     Set-Content -LiteralPath (Join-Path $outputDirectory 'SHA256SUMS.txt') -Value "$archiveHash  rush-hud.zip" -Encoding ascii
     Write-Output "Package: $archive"

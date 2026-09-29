@@ -3,7 +3,8 @@ html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background:
 body { font-family: 'Segoe UI', Arial, sans-serif; color: #f4f6fa; -webkit-font-smoothing: antialiased; }
 #hud { position: absolute; inset: 0; pointer-events: none; }
 .stage { position: absolute; width: 2560px; height: 1440px; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(var(--scale, 1)); }
-.hidden { display: none; }
+.stage { transition: opacity .3s ease, visibility .3s ease; }
+.hidden { opacity: 0; visibility: hidden; }
 .CT { --team: #83d0f3; --team-dark: #153548; }
 .T { --team: #f0c277; --team-dark: #48341f; }
 .stage img, .stage svg { display: block; max-width: 100%; max-height: 100%; object-fit: contain; flex-shrink: 0; }
@@ -64,3 +65,29 @@ footer { position: absolute; bottom: 28px; left: 48px; max-width: 392px; font-si
 footer span { color: #8cc8b4; }
 footer small { margin-left: 14px; font-size: 10px; letter-spacing: 1px; color: #b8c5d7; }
 .preview-tag { position: absolute; top: 218px; left: 50%; transform: translateX(-50%); padding: 10px 18px; background: #784013; color: #fff; font-size: 14px; line-height: 20px; font-weight: 700; letter-spacing: 2px; }
+
+/* JT-style motion, adapted to the RUSH safe areas; no game assets required. */
+.team-name.CT { background: linear-gradient(90deg, #153548, #0c1422 80%); }
+.team-name.T { background: linear-gradient(-90deg, #48341f, #0c1422 80%); }
+.score { background: linear-gradient(160deg, var(--team-dark), #0c1422); text-shadow: 0 0 18px color-mix(in srgb, var(--team) 25%, transparent); }
+.scoreboard { animation: scoreboard-in .5s cubic-bezier(.23,1,.32,1) both; }
+.roster { --enter-x: -24px; animation: roster-in .5s cubic-bezier(.23,1,.32,1) both; }
+.roster.T { --enter-x: 24px; }
+.roster-title { background: linear-gradient(110deg, var(--team-dark), #0c1422 80%); }
+.player { box-shadow: 0 4px 15px #0004; transition: background-color .3s ease, border-color .3s ease, opacity .3s ease; }
+.player.observed { background: linear-gradient(110deg, var(--team-dark), #0c1422 95%); }
+.player.dead { opacity: .62; }
+.player .health { transition: color .3s ease; }
+.health-track { height: 4px; overflow: hidden; border-radius: 0 0 3px 3px; }
+.health-track i { position: absolute; inset: 0 auto 0 0; height: 100%; }
+.health-track .health-fill { background: linear-gradient(90deg, var(--team-dark), var(--team)); transition: width .3s ease-out; }
+.health-track .health-trail { background: #ff4d64; transition: width .6s ease-out 1.2s; }
+.damage-number { position: absolute; right: 18px; top: 2px; z-index: 2; opacity: 0; color: #fff; font-size: 18px; font-weight: 800; text-shadow: 0 2px 6px #000; }
+.observed-player { background: linear-gradient(115deg, var(--team-dark), #0c1422 72%); box-shadow: 0 8px 24px #0005; animation: observer-in .35s ease-out both; }
+.observed-player::before { content: ''; position: absolute; top: 0; left: 22px; right: 22px; height: 1px; background: linear-gradient(90deg, transparent, var(--team), transparent); opacity: .6; }
+@keyframes scoreboard-in { from { opacity: 0; transform: translateY(-18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes roster-in { from { opacity: 0; transform: translateX(var(--enter-x)); } to { opacity: 1; transform: translateX(0); } }
+@keyframes observer-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .stage, .stage *, .stage *::before { animation: none !important; transition: none !important; }
+}

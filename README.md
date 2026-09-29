@@ -30,6 +30,7 @@ End users do not need Node.js or a separate addon server. Remove the addon throu
 - CT/T rosters, reported team scores, game phase and countdown.
 - Health, armor, money, active weapons, kills, assists and deaths.
 - Observed-player highlighting and ammunition.
+- JT-style sliding panels, team gradients, floating damage numbers, delayed red health trails, death transitions and score/observer change animations. Animations respect reduced-motion preferences.
 - Waiting states for missing rosters and unavailable values. Old data clears after ten seconds without updates or immediately on disconnection.
 
 The 1440p layout has 48px side margins, compact lower-corner rosters, a top scoreboard and a bottom observer panel. The center between the rosters is 1680px wide. Long names wrap and shrink within their panels.

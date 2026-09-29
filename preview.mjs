@@ -23,8 +23,8 @@ export const fixture = {
 export const stressFixture = structuredClone(fixture);
 stressFixture.map.team_ct.name = 'Counter-Terrorists International';
 stressFixture.map.team_t.name = 'THE EXTREMELY LONG TEAM NAME CLUB';
-stressFixture.map.team_ct.score = 12;
-stressFixture.map.team_t.score = 11;
+stressFixture.map.team_ct.score = 7;
+stressFixture.map.team_t.score = 7;
 for (const p of Object.values(stressFixture.allplayers)) {
   p.name = 'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW';
   p.state.money = 10000;
