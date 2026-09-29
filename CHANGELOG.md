@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+
+- Add a default-style animated RUSH results screen with winning team, team logos, final scores and player K/A/D.
+- Require gameover and a conclusive score or explicit completed 7-7 tiebreak result before naming a winner.
+- Document remaining differences from the default JT HUD in FEATURE-PARITY.md.
+
 ## 1.3.2
 
 - Replace the fixed RUSH 3V3 label with the current CT-versus-T alive count during all phases. Missing or stale data displays dashes.

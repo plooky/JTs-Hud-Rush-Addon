@@ -8,6 +8,7 @@ const params = new URLSearchParams(location.search);
 const preview = params.get('preview') === '1';
 let latest = null, received = 0, connected = false, hidden = false;
 let lastMarkup = '', previousGame = null;
+let gameoverSince = null;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let theme;
 try { theme = await loadDefaultTheme(); }
@@ -17,12 +18,16 @@ function animate(node, frames, options) {
   if (node && !reducedMotion.matches) node.animate(frames, options);
 }
 function render() {
-  const fresh = connected && received > 0 && performance.now() - received < 10000;
+  const completed = latest?.map?.mode === 'rush' && latest?.map?.phase === 'gameover';
+  const fresh = connected && received > 0 && (performance.now() - received < 10000 || completed);
   const game = normalize(fresh ? latest : {});
   const show = fresh && game.isRush;
   let status = !connected ? 'Connecting to JT Hud Manager' : !fresh ? 'Waiting for live game data' : !game.isRush ? 'Waiting for a RUSH match' : !game.hasRoster ? 'Waiting for spectator data' : game.count !== 6 ? `Spectator roster · ${game.count} / 6 players` : '';
   if (connected && received && !fresh) status = 'Game feed paused · waiting for fresh data';
-  const html = view(game, { show, status, preview, hidden, theme });
+  if (show && game.phase === 'gameover') gameoverSince ??= performance.now();
+  else gameoverSince = null;
+  const results = gameoverSince !== null && performance.now() - gameoverSince >= 3000;
+  const html = view(game, { show, status, preview, hidden, theme, results });
   if (html !== lastMarkup) {
     const damageText = new Map([...root.querySelectorAll('.player-horizontal-container')].map(node => [node.dataset.key, node.querySelector('.damage-indicator')?.textContent]));
     updateMarkup(root, html);

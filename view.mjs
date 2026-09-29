@@ -36,9 +36,17 @@ function roster(team, theme, position) {
 function teamHeader(team, theme, position, show) {
   return `<div class="team ${position} ${team.side}"><div class="score-container"><div class="score ${team.side}">${show ? stat(team.score) : '—'}</div></div><div class="team-name"><span class="fit-text" data-min-size="16">${escape(team.name)}</span></div><div class="logo"><img src="${escape(theme.logos[team.side])}" alt="${team.side}"></div></div>`;
 }
-export function view(game, { show, status, preview, hidden, theme }) {
+function resultTeam(team, game, theme) {
+  return `<section class="eg-team-column ${team.side} ${game.winner === team.side ? 'winner' : ''}"><div class="eg-team-header"><img class="result-logo" src="${escape(theme.logos[team.side])}" alt=""><strong class="eg-team-name fit-text" data-min-size="18">${escape(team.name)}</strong><span class="eg-team-score">${stat(team.score)}</span></div><div class="eg-stat-labels"><span class="eg-player-name-label">PLAYER</span><span class="eg-stat-label">K</span><span class="eg-stat-label">A</span><span class="eg-stat-label">D</span></div><div class="eg-player-list">${[...team.players].sort((a, b) => (b.kills ?? -1) - (a.kills ?? -1)).map((p, i) => `<div data-key="result-${escape(p.id)}" class="eg-player-row" style="animation-delay:${.6 + i * .07}s"><span class="eg-player-name fit-text" data-min-size="16">${escape(p.name)}</span><span class="eg-stat">${stat(p.kills)}</span><span class="eg-stat">${stat(p.assists)}</span><span class="eg-stat eg-deaths">${stat(p.deaths)}</span></div>`).join('')}</div></section>`;
+}
+function resultScreen(game, theme) {
+  const winner = game.winner === 'CT' ? game.ct : game.winner === 'T' ? game.t : null;
+  return `<section data-key="results" class="eg-overlay" aria-label="RUSH match result"><div class="eg-header"><div class="eg-winner-line">${winner ? `<span class="eg-winner-name ${winner.side} fit-text" data-min-size="24">${escape(winner.name)}</span><span class="eg-wins-text">wins RUSH</span>` : '<span class="eg-wins-text">RUSH match ended</span>'}</div></div>${!winner ? '<div class="result-pending">Waiting for a confirmed winning team</div>' : ''}<div class="eg-teams">${resultTeam(game.ct, game, theme)}<div class="eg-divider"></div>${resultTeam(game.t, game, theme)}</div></section>`;
+}
+export function view(game, { show, status, preview, hidden, theme, results = false }) {
   const p = game.observed;
   return `<div class="stage ${hidden ? 'hidden' : ''}">
+    ${show && results ? resultScreen(game, theme) : ''}
     <header data-key="scoreboard" id="matchbar">${teamHeader(game.ct, theme, 'left', show)}<div id="timer"><div id="round_now">${show ? escape(game.roundLabel) : 'RUSH'}</div><div id="round_timer_text">${show ? game.time : '—:—'}</div></div>${teamHeader(game.t, theme, 'right', show)}</header>
     <div data-key="phase" class="rush-phase">RUSH ${show ? stat(game.ct.alive) : '—'}V${show ? stat(game.t.alive) : '—'} · ${show ? escape(phases[game.phase] || game.phase.replaceAll('_', ' ')) : 'AWAITING FEED'}</div>
     ${status ? `<div data-key="status" class="status">${escape(status)}</div>` : ''}

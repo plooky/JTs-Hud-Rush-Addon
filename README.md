@@ -27,6 +27,8 @@ End users do not need Node.js or a separate addon server. Keep the manager's def
 
 ## Displayed data
 
+The animated end-of-match screen appears three seconds after CS2 reports gameover, showing the winning team, final scores and player K/A/D. It stays while connected until the next game state. An unresolved result is labeled as waiting for a confirmed winner. See [default HUD feature parity](FEATURE-PARITY.md) for remaining differences and data requirements.
+
 - Three-player CT/T rosters, reported team scores, game phase and countdown.
 - The label beneath the scoreboard shows live CT-versus-T survivors, such as `RUSH 2V3 · Live`, updating on deaths and respawns. Missing or stale data displays dashes.
 - RUSH rounds 1–14 and a **Tiebreak** label at 7–7. No competitive /24 counter, overtime sets, halftime or loss-bonus calculations.

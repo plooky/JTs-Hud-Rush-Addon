@@ -60,7 +60,18 @@ export function normalize(payload = {}) {
       score: number(data.score), players: members,
       alive: members.length && members.every(p => p.health !== null) ? members.filter(p => p.health > 0).length : null };
   };
-  return { isRush, map: map.name || '', round: number(map.round), roundLabel: rushRoundLabel(map, phase), phase, time: clock(payload.phase_countdowns?.phase_ends_in),
+  return { isRush, map: map.name || '', winner: rushWinner(payload), round: number(map.round), roundLabel: rushRoundLabel(map, phase), phase, time: clock(payload.phase_countdowns?.phase_ends_in),
     ct: team('CT'), t: team('T'), count: players.length,
     hasRoster: Object.hasOwn(payload, 'allplayers'), observed: players.find(p => p.observed) || null };
+}
+
+export function rushWinner(payload = {}) {
+  const map = payload.map || {};
+  if (map.mode !== 'rush' || map.phase !== 'gameover') return null;
+  const ct = number(map.team_ct?.score), t = number(map.team_t?.score);
+  if (ct === null || t === null || ct < 0 || t < 0) return null;
+  if (ct !== t) return ct > t ? 'CT' : 'T';
+  // Some feeds may retain 7-7: use only an explicit completed tiebreak result.
+  if (ct === 7 && t === 7 && map.round === 14 && payload.round?.phase === 'over' && ['CT', 'T'].includes(payload.round.win_team)) return payload.round.win_team;
+  return null;
 }

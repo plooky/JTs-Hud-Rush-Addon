@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalize, clock, rushRoundLabel } from './model.mjs';
+import { normalize, clock, rushRoundLabel, rushWinner } from './model.mjs';
 import { fixture } from './preview.mjs';
 
 test('six-player spectator feed and RUSH spectarget resolve correctly', () => {
@@ -73,4 +73,18 @@ test('round kill cards use reported round kills, not cumulative match kills', ()
   assert.equal(game.observed.kills, 7);
   assert.equal(game.ct.players[0].roundKills, null);
   assert.equal(game.observed.weaponId, 'awp');
+});
+
+test('winner requires gameover and a conclusive result, including the RUSH tiebreak', () => {
+  const map = { mode: 'rush', phase: 'gameover', round: 14, team_ct: { score: 8 }, team_t: { score: 7 } };
+  assert.equal(rushWinner({ map }), 'CT');
+  assert.equal(rushWinner({ map: { ...map, team_ct: { score: 7 }, team_t: { score: 8 } } }), 'T');
+  assert.equal(rushWinner({ map: { ...map, phase: 'live' } }), null);
+  assert.equal(rushWinner({ map: { ...map, mode: 'competitive' } }), null);
+  assert.equal(rushWinner({ map: { ...map, team_ct: {} } }), null);
+  const tied = { ...map, team_ct: { score: 7 } };
+  assert.equal(rushWinner({ map: tied }), null);
+  assert.equal(rushWinner({ map: tied, round: { phase: 'over', win_team: 'T' } }), 'T');
+  assert.equal(rushWinner({ map: { ...tied, round: 13 }, round: { phase: 'over', win_team: 'CT' } }), null);
+  assert.equal(rushWinner({ map: tied, round: { phase: 'live', win_team: 'CT' } }), null);
 });

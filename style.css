@@ -79,4 +79,20 @@ body { color: #fff; }
 .observed-weapon { height: 24px; margin-top: 6px; display: flex; justify-content: center; filter: drop-shadow(0 1px 3px #000); }
 .observed-weapon img { width: 90px; height: 22px; }
 .weapon.tint { filter: brightness(0) invert(1); }
+.eg-overlay { gap: 32px; }
+.eg-header { max-width: 1800px; }
+.eg-winner-line { justify-content: center; flex-wrap: wrap; text-align: center; line-height: 1.2; }
+.eg-winner-line .eg-winner-name { max-width: 1200px; max-height: 150px; }
+.eg-teams { width: 1280px; }
+.eg-team-column { min-width: 0; padding: 24px; }
+.eg-team-header { gap: 20px; min-height: 110px; }
+.result-logo { width: 72px; height: 72px; flex-shrink: 0; object-fit: contain; }
+.eg-team-header .eg-team-name { flex: 1; min-width: 0; max-height: 96px; font-size: 30px; line-height: 1.15; }
+.eg-team-header .eg-team-score { font-size: 48px; }
+.eg-player-row { min-height: 66px; }
+.eg-player-row .eg-player-name { white-space: normal; overflow: visible; font-size: 24px; max-height: 86px; line-height: 1.15; }
+.eg-player-row .eg-stat { font-size: 24px; }
+.eg-stat-labels .eg-stat-label, .eg-player-row .eg-stat { width: 60px; flex-shrink: 0; }
+.result-pending { font-size: 24px; color: #bdbdbd; }
+.eg-overlay ~ .preview-tag { z-index: 101; }
 @media (prefers-reduced-motion: reduce) { .stage, .stage *, .stage *::before { animation: none !important; transition: none !important; } }
