@@ -51,6 +51,12 @@ test('confirmed deaths stay latched through stale same-round GSI updates', () =>
   const staleHealth = structuredClone(deadRaw);
   staleHealth.allplayers.ct2.state.health = 64;
   assert.equal(normalize(staleHealth, dead).ct.players.find(player => player.id === 'ct2').health, 0);
+  const omitted = structuredClone(deadRaw);
+  delete omitted.allplayers.ct2;
+  const retainedOmitted = normalize(omitted, dead);
+  assert.equal(retainedOmitted.count, 6);
+  assert.equal(retainedOmitted.ct.players.find(player => player.id === 'ct2').health, 0);
+  assert.equal(retainedOmitted.radar.markers.find(player => player.id === 'ct2').dead, true);
   staleHealth.phase_countdowns.phase = 'freezetime';
   assert.equal(normalize(staleHealth, dead).ct.players.find(player => player.id === 'ct2').health, 64);
   staleHealth.phase_countdowns.phase = 'live';

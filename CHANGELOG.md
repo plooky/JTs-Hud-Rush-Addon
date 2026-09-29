@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.4
+
+- Retain a confirmed dead player's card when delayed GSI snapshots temporarily omit that player or replay stale live health during the same round.
+- Prevent a returning dead player from being treated as a new entry and replaying the enlargement animation.
+
 ## 1.7.3
 
 - Remove the radar caption bar and room label, leaving only the bordered playable radar map.

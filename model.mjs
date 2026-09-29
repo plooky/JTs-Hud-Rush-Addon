@@ -66,9 +66,14 @@ export function normalize(payload = {}, previous = null) {
   const sameActiveRound = previous?.isRush && isRush && previous.map === map.name &&
     previous.round === number(map.round) && !['warmup', 'freezetime'].includes(phase);
   if (sameActiveRound) {
-    const dead = new Set([...previous.ct.players, ...previous.t.players]
-      .filter(player => player.health === 0).map(player => player.id));
+    const dead = new Map([...previous.ct.players, ...previous.t.players]
+      .filter(player => player.health === 0).map(player => [player.id, player]));
+    const present = new Set(players.map(player => player.id));
     players = players.map(player => dead.has(player.id) ? { ...player, health: 0 } : player);
+    for (const player of dead.values()) if (!present.has(player.id)) {
+      players.push({ ...player, observed: observed === player.id });
+    }
+    players.sort((a, b) => (a.slot === 0 ? 10 : a.slot ?? 99) - (b.slot === 0 ? 10 : b.slot ?? 99) || a.id.localeCompare(b.id));
   }
   const team = side => {
     const data = map[side === 'CT' ? 'team_ct' : 'team_t'] || {};
