@@ -11,6 +11,8 @@ test('six-player spectator feed and RUSH spectarget resolve correctly', () => {
   assert.equal(game.observed.name, 'Player Two');
   assert.equal(game.observed.weapon, 'AWP');
   assert.equal(game.ct.score, 2);
+  assert.equal(game.radar.room, 'room104');
+  assert.equal(game.radar.markers.length, 6);
 });
 test('partial warmup spectator roster works without an observed player', () => {
   const raw = structuredClone(fixture);

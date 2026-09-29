@@ -10,6 +10,7 @@ Compared against the installed July 13, 2026 default HUD bundle and its panel.js
 - The default-style animated end-of-match screen shows the winner, final scores, replaceable team logos and three-player K/A/D lists. It appears three seconds after gameover and remains while connected until the game state changes. Missing/tied results do not fabricate a winner. An explicit completed round-15 tiebreak winner can resolve a retained 7-7 score.
 - Version 1.5.0 adds explicit round-win announcements, pause/timeout overlays, reported timeout counts, buy-phase team utility totals, tournament branding, CT/T colors, corner/model/advertisement/compact-matchbar controls, fuller carried equipment strips and accumulated rapid-hit damage numbers.
 - Version 1.6.0 adds event-driven motion to the matchbar, rosters, player entry/death/revival, observed player, timer, scores, statistics, equipment, round-kill cards, utility panels, round announcements, pauses and timeouts. Keyed elements stay mounted for exit transitions, and countdown-only updates remain quiet.
+- Version 1.7.0 adds the default-style radar behavior adapted to RUSH's randomized arenas. Live player coordinates select the calibrated room overview and drive team-colored, directional player markers, including observed and dead states.
 - Local image overrides, reduced motion, stale live-data clearing and disconnect cleanup.
 
 ## Missing features that can be adapted
@@ -20,7 +21,6 @@ Compared against the installed July 13, 2026 default HUD bundle and its panel.js
 
 ## Data-dependent or unsuitable without adaptation
 
-- **Radar:** default radar assets/calibration cover competitive maps. RUSH needs room-aware map assets, positions and reliable room selection. No verified room/objective feed is currently integrated.
 - **Killfeed:** the default contains a renderer subscribing to kill events, but its manifest advertises killfeed=false. Raw GSI health/K/D snapshots do not reliably supply killer/victim/weapon/headshot attribution. A verified event source is required; the default renderer's presence does not prove a working feed.
 - **ADR:** default results show K/D/ADR. RUSH results show K/A/D. Reliable ADR needs authoritative damage totals and round accounting, or complete captured round damage from the match start. Joining mid-match cannot recover missing damage history.
 - **Player cameras:** the default avatar component has camera hooks. These require a separately configured video feed; the RUSH addon does not integrate it.

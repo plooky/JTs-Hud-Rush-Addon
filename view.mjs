@@ -51,6 +51,15 @@ function roster(team, theme, position) {
 function teamHeader(team, theme, position, show) {
   return `<div class="team ${position} ${team.side}"><div class="score-container"><div class="score ${team.side}">${show ? stat(team.score) : '—'}</div></div><div class="team-name"><span class="fit-text" data-min-size="16">${escape(team.name)}</span></div><div class="logo"><img src="${escape(theme.logos[team.side])}" alt="${team.side}"></div></div>`;
 }
+function radar(game, theme) {
+  if (!game.radar) return '';
+  const background = escape(theme.radar[game.radar.room].replaceAll("'", '%27'));
+  const markers = game.radar.markers.map(marker => {
+    const slot = marker.slot === 0 ? 10 : marker.slot;
+    return `<div data-key="radar-player-${escape(marker.id)}" class="radar-player ${marker.side} ${marker.dead ? 'dead' : ''} ${marker.observed ? 'active' : ''}" style="left:${marker.x / 10.24}%;top:${marker.y / 10.24}%;--facing:${marker.facing}deg" title="${escape(marker.name)}"><span class="radar-facing"></span><strong>${stat(slot)}</strong></div>`;
+  }).join('');
+  return `<aside data-key="radar" class="rush-radar" aria-label="RUSH ${escape(game.radar.label)} radar"><div class="radar-map" style="background-image:url('${background}')">${markers}</div><div class="radar-caption"><span>RUSH RADAR</span><strong>${escape(game.radar.label)}</strong></div></aside>`;
+}
 function resultTeam(team, game, theme) {
   return `<section class="eg-team-column ${team.side} ${game.winner === team.side ? 'winner' : ''}"><div class="eg-team-header"><img class="result-logo" src="${escape(theme.logos[team.side])}" alt=""><strong class="eg-team-name fit-text" data-min-size="18">${escape(team.name)}</strong><span class="eg-team-score">${stat(team.score)}</span></div><div class="eg-stat-labels"><span class="eg-player-name-label">PLAYER</span><span class="eg-stat-label">K</span><span class="eg-stat-label">A</span><span class="eg-stat-label">D</span></div><div class="eg-player-list">${[...team.players].sort((a, b) => (b.kills ?? -1) - (a.kills ?? -1)).map((p, i) => `<div data-key="result-${escape(p.id)}" class="eg-player-row" style="animation-delay:${.6 + i * .07}s"><span class="eg-player-name fit-text" data-min-size="16">${escape(p.name)}</span><span class="eg-stat">${stat(p.kills)}</span><span class="eg-stat">${stat(p.assists)}</span><span class="eg-stat eg-deaths">${stat(p.deaths)}</span></div>`).join('')}</div></section>`;
 }
@@ -66,6 +75,7 @@ export function view(game, { show, status, preview, hidden, theme, results = fal
     ${show && results ? resultScreen(game, theme) : ''}
     <header data-key="scoreboard" id="matchbar" class="${settings.compact_matchbar && game.phase === 'live' ? 'compact-rush' : ''}">${teamHeader(game.ct, theme, 'left', show)}<div id="timer"><div id="round_now">${show ? escape(game.roundLabel) : 'RUSH'}</div><div id="round_timer_text">${show ? game.time : '—:—'}</div></div>${teamHeader(game.t, theme, 'right', show)}${tournament.length ? `<div id="tournament_info" class="show"><span class="tournament_name">${escape(settings.tournament_name || '')}</span>${tournament.length > 1 ? '<span class="tournament_separator">·</span>' : ''}<span class="tournament_stage">${escape(settings.tournament_stage || '')}</span></div>` : ''}</header>
     ${show ? roundWin(game, theme) + interruption(game, theme) : ''}
+    ${show ? radar(game, theme) : ''}
     ${show ? `<div data-key="utility-panels" class="matchbar-team-panels">${utilityPanel(game.ct, theme, 'left', game.phase === 'freezetime' && !!game.ct.utility)}<div class="matchbar-panel-spacer"></div>${utilityPanel(game.t, theme, 'right', game.phase === 'freezetime' && !!game.t.utility)}</div>` : ''}
     ${status ? `<div data-key="status" class="status">${escape(status)}</div>` : ''}
     ${preview ? '<div data-key="preview" class="preview-tag">PREVIEW · SYNTHETIC TEST DATA</div>' : ''}

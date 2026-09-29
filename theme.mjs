@@ -1,3 +1,5 @@
+import { RUSH_RADAR_ROOMS } from './radar.mjs';
+
 // Reuse the manager's installed default theme rather than redistribute its bundle.
 export const CUSTOM_IMAGE_FORMATS = ['svg', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'avif', 'bmp', 'ico'];
 
@@ -45,6 +47,7 @@ export async function loadDefaultTheme() {
     portraits,
     observedPortraits: Object.fromEntries(['CT', 'T'].map(side => [side, imageURL(images.observedPortraits?.[side], portraits[side])])),
     logos: { CT: imageURL(images.logos?.CT, asset('logo_CT_default')), T: imageURL(images.logos?.T, asset('logo_T_default')) },
+    radar: Object.fromEntries(RUSH_RADAR_ROOMS.map(room => [room, imageURL(images.radar?.[room], `./assets/radar/${room}.png`)])),
     icons: Object.fromEntries(Object.entries(images.icons || {}).map(([key, value]) => [key, descriptor(value)])),
     weapons: new Map([
       ...weapons.map(id => [id, descriptor({ src: `./assets/weapons/${id}.svg`, tint: true })]),

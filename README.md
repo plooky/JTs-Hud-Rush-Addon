@@ -34,6 +34,7 @@ The animated end-of-match screen appears three seconds after CS2 reports gameove
 - RUSH rounds 1–14 and a **Tiebreak** label at 7–7. No competitive /24 counter, overtime sets, halftime or loss-bonus calculations.
 - Live player cards show health, armor, money, active and carried weapons, grenades, kills and deaths. Assists remain available on the match-end K/A/D results screen.
 - Observed-player highlighting and ammunition.
+- A top-left, room-aware RUSH radar selects the randomized arena from live player coordinates and tracks all reported players by position, facing direction, side, observer slot, observed target and death state. It includes the convoy tiebreak and party/warmup area.
 - The default JT HUD's horizontal portrait cards, team logos, central observed-player portrait, weapon silhouettes, gradients, skull/death transitions and delayed red health trails. Floating damage numbers and score/observer transitions preserve their state across updates. Animations respect reduced-motion preferences. The top-right player counter is omitted.
 - Element-level motion follows live events: the matchbar, player cards and observed panel enter in sequence; round changes flip the timer; scores pop; players animate on entry, death and revival; statistics, equipment and round-kill cards react to changes; and utility, round-win, pause and timeout panels animate both in and out. Routine countdown ticks do not restart animations.
 - Round-kill cards use reported `state.round_kills`, separately from cumulative match kills.
@@ -45,7 +46,7 @@ The manager's HUD panel provides tournament name/stage, CT and T colors, square 
 
 ## Limits and troubleshooting
 
-**Retain CS2's native RUSH objective display.** The tower changes ownership when a player interacts with it, but that interaction and ownership state were absent from the captured GSI packets. The addon does not infer tower ownership from team scores, round winners or player positions. RUSH has no bomb/defuse UI. The addon also does not provide a custom radar or killfeed.
+**Retain CS2's native RUSH objective display.** The tower changes ownership when a player interacts with it, but that interaction and ownership state were absent from the captured GSI packets. The addon does not infer tower ownership from team scores, round winners or player positions. RUSH has no bomb/defuse UI. The addon does not provide a killfeed.
 
 Full-team data requires CS2 to send an `allplayers` roster. A player-view feed may omit it. If the HUD is waiting, check that CS2 is in RUSH, that you are observing, and that the manager is receiving GSI updates. Restart CS2 after installing the GSI configuration. If the browser source cannot connect, check that the manager is running and the source uses its current address.
 
@@ -60,6 +61,7 @@ Edit **images.json** in the HUD folder. On Windows the installed folder is norma
 - `logos.CT` and `logos.T`: scoreboard logos. `null` uses the default JT logo.
 - `icons`: skull, kills, armor, helmet and bullets. Each can be a direct path string or an object with `src` and `tint`. Set `tint` to `false` for a full-color image; `true` uses the image's transparency as a team-colored silhouette.
 - `weapons`: optional overrides keyed by GSI weapon name without `weapon_`, such as `ak47` or `flashbang`. Each accepts `src` and `tint`; `false` preserves colors, `true` renders a white silhouette. Existing weapon SVGs can also be replaced directly in `assets/weapons/`.
+- `radar`: optional background overrides keyed by `room101` through `room104`, `room201` through `room212`, `room301`, `room401`, `roomparty` and `convoy`. A `null` value uses the bundled RUSH overview. The replacement must preserve the same 1024×1024 room calibration.
 
 For example, change `portraits.CT` to `"./assets/custom/ct.jpg"`, set `icons.skull` to `"./assets/custom/skull.png"`, or add `"ak47": { "src": "./assets/custom/ak47.svg", "tint": true }` inside `weapons`. Supported Chromium formats include **SVG, PNG, JPG/JPEG, WebP, GIF, AVIF, BMP and ICO**. Animated GIF and animated WebP files retain their animation. Use `tint: false` for JPG and other full-color images because they do not provide a useful transparency mask. Images use contain sizing so their aspect ratio is preserved without cropping.
 
@@ -68,7 +70,7 @@ For example, change `portraits.CT` to `"./assets/custom/ct.jpg"`, set `icons.sku
 Use Node.js 20 or later and PowerShell. From this folder:
 
 ```powershell
-node --test model.test.mjs motion.test.mjs
+node --test model.test.mjs motion.test.mjs radar.test.mjs theme.test.mjs
 powershell -NoProfile -File .\Build-RushHud.ps1
 ```
 
@@ -80,7 +82,7 @@ pwsh -NoProfile -File .\Build-RushHud.ps1 -Install
 
 Append `?preview=1` to the installed HUD URL for a labeled synthetic preview, or `?preview=1&stress=1` for long names and extreme values. Remove these parameters for a live broadcast. Tests use synthetic data; local game captures are excluded from the repository and package.
 
-The HUD registers in the manager's Socket.IO `huds` room and consumes raw `update` snapshots. It activates for `map.mode === "rush"`, takes rosters from `allplayers`, and matches the observed player's `spectarget` or `steamid` against roster IDs.
+The HUD registers in the manager's Socket.IO `huds` room and consumes raw `update` snapshots. It activates for `map.mode === "rush"`, takes rosters from `allplayers`, and matches the observed player's `spectarget` or `steamid` against roster IDs. Radar coordinates come directly from each roster player's reported `position` and `forward`; if those fields are absent, the radar stays hidden instead of guessing an arena.
 
 ## Local RUSH testing
 

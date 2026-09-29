@@ -31,6 +31,7 @@ function playPresentationMotion(before, game) {
     animateAll('.teambox.left .player-horizontal-container', [{ opacity: 0, transform: 'translate(-45px, 70px) scale(.94)' }, { opacity: 1, transform: 'translate(0, 0) scale(1)' }], { duration: 620, easing: ease, fill: 'backwards' }, 85);
     animateAll('.teambox.right .player-horizontal-container', [{ opacity: 0, transform: 'translate(45px, 70px) scale(.94)' }, { opacity: 1, transform: 'translate(0, 0) scale(1)' }], { duration: 620, easing: ease, fill: 'backwards' }, 85);
     animate(root.querySelector('.observed'), [{ opacity: 0, transform: 'translate(-50%, 70px) scale(.94)' }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)' }], { duration: 680, delay: 180, easing: ease, fill: 'backwards' });
+    animate(root.querySelector('.rush-radar'), [{ opacity: 0, transform: 'translate(-35px, -20px) scale(.92)' }, { opacity: 1, transform: 'translate(0, 0) scale(1)' }], { duration: 600, delay: 120, easing: ease, fill: 'backwards' });
   }
   if (motion.phase) {
     if (game.phase === 'freezetime') animateAll('.team-econ-panel.show', [{ opacity: 0, transform: 'translateY(-18px) scale(.97)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 420, easing: ease }, 90);
@@ -39,6 +40,7 @@ function playPresentationMotion(before, game) {
     if (['timeout_ct', 'timeout_t'].includes(game.phase)) animate(root.querySelector('#timeout.show'), [{ opacity: 0, transform: 'translate(-50%, -30px) scale(.94)' }, { opacity: 1, transform: 'translate(-50%, 0) scale(1)' }], { duration: 500, easing: ease });
   }
   if (motion.round) animate(root.querySelector('#timer'), [{ transform: 'perspective(400px) rotateX(-75deg)', opacity: .2 }, { transform: 'perspective(400px) rotateX(0)', opacity: 1 }], { duration: 520, easing: ease });
+  if (motion.radar) animate(root.querySelector('.rush-radar'), [{ opacity: .15, transform: 'scale(.94) rotateY(-7deg)' }, { opacity: 1, transform: 'scale(1) rotateY(0)' }], { duration: 520, easing: ease });
   if (motion.teams) animateAll('#matchbar .team-name', [{ opacity: 0, transform: 'translateY(-10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 420, easing: ease });
   for (const side of motion.scores || []) animate(root.querySelector(`.score.${side.toUpperCase()}`), [{ filter: 'brightness(2.5)', transform: 'scale(.75)' }, { filter: 'brightness(1.7)', transform: 'scale(1.3)', offset: .55 }, { filter: 'brightness(1)', transform: 'scale(1)' }], { duration: 650, easing: ease });
   for (const event of motion.players || []) {

@@ -1,3 +1,5 @@
+import { buildRushRadar, parseVector } from './radar.mjs';
+
 // JT sends complete GSI snapshots. Never merge previously/added into current state.
 export const number = value => typeof value === 'number' && Number.isFinite(value) ? value : null;
 export const display = value => value === null || value === undefined ? '—' : String(value);
@@ -52,6 +54,7 @@ export function normalize(payload = {}) {
         helmet: p.state?.helmet === true, money: number(p.state?.money), roundKills: number(p.state?.round_kills),
         kills: number(p.match_stats?.kills), assists: number(p.match_stats?.assists),
         deaths: number(p.match_stats?.deaths), observed: observed === id,
+        position: parseVector(p.position), forward: parseVector(p.forward),
         weapon: weaponName(active?.name), weaponId: active?.name?.replace(/^weapon_/, '') || '', ammo: number(active?.ammo_clip),
         reserve: number(active?.ammo_reserve), flashed: (number(p.state?.flashed) || 0) > 0,
         grenades: equipment.filter(w => w.type === 'Grenade'),
@@ -77,6 +80,7 @@ export function normalize(payload = {}) {
     (payload.round?.phase === 'over' || phase === 'over') ? payload.round.win_team : null;
   return { isRush, map: map.name || '', winner: rushWinner(payload), round: number(map.round), roundLabel: rushRoundLabel(map, phase), phase, time: clock(payload.phase_countdowns?.phase_ends_in),
     ct: team('CT'), t: team('T'), count: players.length,
+    radar: isRush ? buildRushRadar(map.name, players) : null,
     roundWinner: explicitRoundWinner,
     hasRoster: Object.hasOwn(payload, 'allplayers'), observed: players.find(p => p.observed) || null };
 }

@@ -72,6 +72,7 @@ export function presentationChanges(previous, current) {
     round: comparable && previous.round !== current.round,
     observed: comparable && previous.observed?.id !== current.observed?.id,
     observedVitals: comparable && current.observed && previous.observed?.id === current.observed.id && (previous.observed.health !== current.observed.health || previous.observed.armor !== current.observed.armor),
+    radar: comparable && previous.radar?.room !== current.radar?.room,
     scores: comparable ? ['ct', 't'].filter(side => previous[side].score !== current[side].score) : [],
     teams: comparable && (previous.ct.name !== current.ct.name || previous.t.name !== current.t.name)
   };

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.0
+
+- Add a room-aware RUSH radar using the overview textures and calibration shipped with CS2.
+- Detect the randomized room from live roster positions and track player position, facing, team, observer slot, observed target and death state.
+- Add replaceable radar backgrounds for every RUSH room, the party area and the convoy tiebreak.
+
 ## 1.6.4
 
 - Remove overlapping brightness animations from dead player cards so their death opacity remains stable after the initial JT transition.

@@ -19,6 +19,15 @@ export const fixture = {
   }
 };
 fixture.allplayers.ct2.state.round_kills = 2;
+const room104 = { posX: 1744, posY: 7836, scale: 2.484375 };
+const at = (x, y) => `${room104.posX + room104.scale * x}, ${room104.posY - room104.scale * y}, 128`;
+[
+  ['ct1', 330, 350, '0, 1, 0'], ['ct2', 440, 440, '1, 0, 0'], ['ct3', 520, 520, '0, -1, 0'],
+  ['t1', 610, 610, '-1, 0, 0'], ['t2', 700, 520, '0, 1, 0'], ['t3', 760, 420, '1, 0, 0']
+].forEach(([id, x, y, forward]) => {
+  fixture.allplayers[id].position = at(x, y);
+  fixture.allplayers[id].forward = forward;
+});
 
 // Layout QA only: long names, full inventories, three-digit stats and flash state.
 export const stressFixture = structuredClone(fixture);
