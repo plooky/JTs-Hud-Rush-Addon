@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.1
+
+- Remove the top-right player counter.
+- Give death skulls a 66px slot with room for the full 50px icon and its reveal animation.
+- Add images.json for replacing team logos, roster/observer portraits, status icons and weapon images without code edits, including full-color images.
+
 ## 1.3.0
 
 - Use the installed default JT HUD's theme, team logos and portraits with horizontal 3v3 cards, weapon silhouettes, round-kill cards, a central observer panel and an alive counter.

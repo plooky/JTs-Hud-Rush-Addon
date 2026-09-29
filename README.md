@@ -31,7 +31,7 @@ End users do not need Node.js or a separate addon server. Keep the manager's def
 - RUSH rounds 1–14 and a **Tiebreak** label at 7–7. No competitive /24 counter, overtime sets, halftime or loss-bonus calculations.
 - Health, armor, money, active weapons, kills, assists and deaths.
 - Observed-player highlighting and ammunition.
-- The default JT HUD's horizontal portrait cards, team logos, central observed-player portrait, weapon silhouettes, alive counter, gradients, skull/death transitions and delayed red health trails. Floating damage numbers and score/observer transitions preserve their state across updates. Animations respect reduced-motion preferences.
+- The default JT HUD's horizontal portrait cards, team logos, central observed-player portrait, weapon silhouettes, gradients, skull/death transitions and delayed red health trails. Floating damage numbers and score/observer transitions preserve their state across updates. Animations respect reduced-motion preferences. The top-right player counter is omitted.
 - Round-kill cards use reported `state.round_kills`, separately from cumulative match kills.
 - Waiting states for missing rosters and unavailable values. Old data clears after ten seconds without updates or immediately on disconnection.
 
@@ -44,6 +44,18 @@ The 1440p layout follows the default HUD: a top-center scoreboard and bottom-cen
 Full-team data requires CS2 to send an `allplayers` roster. A player-view feed may omit it. If the HUD is waiting, check that CS2 is in RUSH, that you are observing, and that the manager is receiving GSI updates. Restart CS2 after installing the GSI configuration. If the browser source cannot connect, check that the manager is running and the source uses its current address.
 
 Verified with a local RUSH spectator session: warmup, active play, score changes, the following buy phase, health, weapons and ammunition. The local session reported five bots. Six-player layout and long-name fitting were tested using synthetic data at 2560 × 1440. Valve matchmaking/GOTV has not been separately validated.
+
+## Replacing images
+
+Edit **images.json** in the HUD folder. On Windows the installed folder is normally `%USERPROFILE%\jthm-huds\rush-hud`. Put replacement files in `assets/custom/`, then set their paths in `images.json` and refresh the OBS browser source. No JavaScript or CSS edits are required. Back up custom files and your configuration before importing an addon update, which may replace the installed folder.
+
+- `portraits.CT` and `portraits.T`: roster portraits. `null` uses the installed default JT portrait.
+- `observedPortraits.CT` and `observedPortraits.T`: central observer portraits. `null` uses the corresponding roster portrait.
+- `logos.CT` and `logos.T`: scoreboard logos. `null` uses the default JT logo.
+- `icons`: skull, kills, armor, helmet and bullets. Each has a `src` path and `tint` option. Set `tint` to `false` for a full-color image; `true` uses the image's transparency as a team-colored silhouette.
+- `weapons`: optional overrides keyed by GSI weapon name without `weapon_`, such as `ak47` or `flashbang`. Each accepts `src` and `tint`; `false` preserves colors, `true` renders a white silhouette. Existing weapon SVGs can also be replaced directly in `assets/weapons/`.
+
+For example, change `portraits.CT` to `"./assets/custom/ct.png"`, or add `"ak47": { "src": "./assets/custom/ak47.png", "tint": false }` inside `weapons`. PNG, WebP and SVG files work; transparent backgrounds are recommended. Images use contain sizing so their aspect ratio is preserved without cropping.
 
 ## Development
 

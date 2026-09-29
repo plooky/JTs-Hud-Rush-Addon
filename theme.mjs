@@ -26,9 +26,21 @@ export async function loadDefaultTheme() {
     return new URL(name, scriptURL).href;
   };
   const weapons = await fetch('./assets/weapons.json').then(r => r.json());
+  const images = await fetch('./images.json', { cache: 'no-store' }).then(r => {
+    if (!r.ok) throw new Error('Image configuration could not load');
+    return r.json();
+  });
+  const imageURL = path => new URL(path, location.href).href;
+  const portraits = { CT: images.portraits?.CT || asset('default_CT'), T: images.portraits?.T || asset('default_T') };
+  const descriptor = value => ({ src: imageURL(value.src), tint: value.tint === true });
   return {
-    portraits: { CT: asset('default_CT'), T: asset('default_T') },
-    logos: { CT: asset('logo_CT_default'), T: asset('logo_T_default') },
-    weapons: new Set(weapons)
+    portraits: Object.fromEntries(Object.entries(portraits).map(([side, path]) => [side, imageURL(path)])),
+    observedPortraits: Object.fromEntries(['CT', 'T'].map(side => [side, imageURL(images.observedPortraits?.[side] || portraits[side])])),
+    logos: { CT: imageURL(images.logos?.CT || asset('logo_CT_default')), T: imageURL(images.logos?.T || asset('logo_T_default')) },
+    icons: Object.fromEntries(Object.entries(images.icons).map(([key, value]) => [key, descriptor(value)])),
+    weapons: new Map([
+      ...weapons.map(id => [id, descriptor({ src: `./assets/weapons/${id}.svg`, tint: true })]),
+      ...Object.entries(images.weapons || {}).map(([id, value]) => [id, descriptor(value)])
+    ])
   };
 }
