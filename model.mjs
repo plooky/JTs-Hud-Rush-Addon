@@ -43,6 +43,10 @@ export function normalize(payload = {}) {
     .map(([id, p]) => {
       const weapons = Object.values(p.weapons || {}).filter(Boolean);
       const active = weapons.find(w => w.state === 'active');
+      const equipment = weapons.filter(w => w.type !== 'Knife').map(w => ({
+        id: w.name?.replace(/^weapon_/, '') || '', name: weaponName(w.name), type: w.type || '',
+        active: w.state === 'active', quantity: number(w.ammo_reserve)
+      }));
       return { id, name: p.name || 'Unknown player', side: p.team,
         slot: number(p.observer_slot), health: number(p.state?.health), armor: number(p.state?.armor),
         helmet: p.state?.helmet === true, money: number(p.state?.money), roundKills: number(p.state?.round_kills),
@@ -50,18 +54,30 @@ export function normalize(payload = {}) {
         deaths: number(p.match_stats?.deaths), observed: observed === id,
         weapon: weaponName(active?.name), weaponId: active?.name?.replace(/^weapon_/, '') || '', ammo: number(active?.ammo_clip),
         reserve: number(active?.ammo_reserve), flashed: (number(p.state?.flashed) || 0) > 0,
-        grenades: weapons.filter(w => w.type === 'Grenade').map(w => ({ id: w.name?.replace(/^weapon_/, '') || '', name: weaponName(w.name), active: w.state === 'active' })),
-        inventory: weapons.filter(w => w.type !== 'Knife').map(w => weaponName(w.name)) };
+        grenades: equipment.filter(w => w.type === 'Grenade'),
+        equipment: equipment.filter(w => w.type !== 'Grenade'),
+        inventory: equipment.map(w => w.name) };
     }).sort((a, b) => (a.slot === 0 ? 10 : a.slot ?? 99) - (b.slot === 0 ? 10 : b.slot ?? 99) || a.id.localeCompare(b.id));
   const team = side => {
     const data = map[side === 'CT' ? 'team_ct' : 'team_t'] || {};
     const members = players.filter(p => p.side === side);
+    const utility = {};
+    let hasUtility = false;
+    for (const member of members) for (const grenade of member.grenades) {
+      if (grenade.quantity === null) continue;
+      utility[grenade.id] = (utility[grenade.id] || 0) + grenade.quantity;
+      hasUtility = true;
+    }
     return { side, name: data.name || (side === 'CT' ? 'Counter-Terrorists' : 'Terrorists'),
       score: number(data.score), players: members,
-      alive: members.length && members.every(p => p.health !== null) ? members.filter(p => p.health > 0).length : null };
+      alive: members.length && members.every(p => p.health !== null) ? members.filter(p => p.health > 0).length : null,
+      timeoutsRemaining: number(data.timeouts_remaining), utility: hasUtility ? utility : null };
   };
+  const explicitRoundWinner = ['CT', 'T'].includes(payload.round?.win_team) &&
+    (payload.round?.phase === 'over' || phase === 'over') ? payload.round.win_team : null;
   return { isRush, map: map.name || '', winner: rushWinner(payload), round: number(map.round), roundLabel: rushRoundLabel(map, phase), phase, time: clock(payload.phase_countdowns?.phase_ends_in),
     ct: team('CT'), t: team('T'), count: players.length,
+    roundWinner: explicitRoundWinner,
     hasRoster: Object.hasOwn(payload, 'allplayers'), observed: players.find(p => p.observed) || null };
 }
 

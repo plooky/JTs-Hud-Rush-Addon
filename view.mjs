@@ -26,9 +26,26 @@ function playerCard(p, theme) {
       <div class="card-info-section"><div class="username-row"><strong class="name fit-text" data-min-size="11">${escape(p.name)}</strong><div class="health-armor-group" title="Armor ${stat(p.armor)}${p.helmet ? ', helmet' : ''}"><span class="armor-container">${p.armor > 0 ? icon(p.helmet ? 'helmet' : 'armor', theme) : ''}</span><span class="health-text">${stat(p.health)}</span></div></div>
         <div class="stats-row"><div class="stat-group" title="Kills / assists / deaths"><span class="stat-item">${icon('kills', theme)}${stat(p.kills)}</span><span class="stat-item assists">A ${stat(p.assists)}</span><span class="stat-item">${icon('skull', theme)}${stat(p.deaths)}</span></div><span class="money">${money(p.money)}</span></div>
       </div>
-      <div class="card-weapons-section"><div class="health-bar-red" style="width:${hp(p)}%"></div><div class="health-bar" style="width:${hp(p)}%"></div><div class="main-weapon-container">${weapon(p.weaponId, p.weapon, theme)}</div><div class="grenade-strip">${p.grenades.map(g => `<span class="${g.active ? 'active' : ''}">${weapon(g.id, g.name, theme)}</span>`).join('')}</div></div>
+      <div class="card-weapons-section"><div class="health-bar-red" style="width:${hp(p)}%"></div><div class="health-bar" style="width:${hp(p)}%"></div><div class="equipment-strip">${p.equipment.map(item => `<span class="${item.active ? 'active' : ''}">${weapon(item.id, item.name, theme)}</span>`).join('')}</div><div class="grenade-strip">${p.grenades.map(g => `<span class="${g.active ? 'active' : ''}">${weapon(g.id, g.name, theme)}${g.quantity !== null && g.quantity > 1 ? `<b>${g.quantity}</b>` : ''}</span>`).join('')}</div></div>
     </div>
   </article>`;
+}
+const utilityOrder = ['flashbang', 'smokegrenade', 'hegrenade', 'molotov', 'incgrenade'];
+function utilityPanel(team, theme, position) {
+  if (!team.utility) return '';
+  const items = utilityOrder.filter(id => (team.utility[id] || 0) > 0).map(id => `<span class="utility-item"><span class="utility-item-icon">${weapon(id, id, theme)}</span><strong>${team.utility[id]}</strong></span>`).join('');
+  return `<section class="team-econ-panel show ${team.side} ${position}"><div class="team-econ-header"><span class="title">TEAM UTILITY</span><div class="utility-summary-row ${team.side}">${items || '<span class="utility-none">None</span>'}</div></div></section>`;
+}
+function roundWin(game, theme) {
+  if (!game.roundWinner) return '';
+  const team = game.roundWinner === 'CT' ? game.ct : game.t;
+  return `<section class="win_announcement show ${team.side}" aria-live="polite"><div class="win_content"><div class="team_logo_container"><img src="${escape(theme.logos[team.side])}" alt=""></div><div class="win_text_container"><strong class="team_name fit-text" data-min-size="18">${escape(team.name)}</strong><span class="win_caption">WINS THE ROUND!</span></div></div></section>`;
+}
+function interruption(game, theme) {
+  if (game.phase === 'paused') return `<section id="pause" class="show"><div class="pause-content"><div class="pause-icon">Ⅱ</div><div class="pause-text-container"><strong class="pause-main-text">MATCH PAUSED</strong><span class="pause-sub-text">Waiting for play to resume</span></div></div></section>`;
+  if (!['timeout_ct', 'timeout_t'].includes(game.phase)) return '';
+  const team = game.phase === 'timeout_ct' ? game.ct : game.t;
+  return `<section id="timeout" class="show ${team.side}"><div class="timeout-header"><div class="team-logo-container"><img src="${escape(theme.logos[team.side])}" alt=""></div><div class="timeout-info"><strong class="timeout-title fit-text" data-min-size="14">${escape(team.name)} TIMEOUT</strong><span class="timeout-timer">${escape(game.time)}</span></div></div>${team.timeoutsRemaining === null ? '' : `<div class="timeout-footer"><span class="timeouts-remaining">${team.timeoutsRemaining} TIMEOUT${team.timeoutsRemaining === 1 ? '' : 'S'} REMAINING</span></div>`}</section>`;
 }
 function roster(team, theme, position) {
   return `<section data-key="roster-${team.side}" class="teambox layout-horizontal ${team.side} ${position}" aria-label="${escape(team.name)} roster">${team.players.map(p => playerCard(p, theme)).join('')}${Array.from({ length: Math.max(0, 3 - team.players.length) }, (_, i) => `<div data-key="empty-${i}" class="empty-player">Waiting for player</div>`).join('')}</section>`;
@@ -43,15 +60,19 @@ function resultScreen(game, theme) {
   const winner = game.winner === 'CT' ? game.ct : game.winner === 'T' ? game.t : null;
   return `<section data-key="results" class="eg-overlay" aria-label="RUSH match result"><div class="eg-header"><div class="eg-winner-line">${winner ? `<span class="eg-winner-name ${winner.side} fit-text" data-min-size="24">${escape(winner.name)}</span><span class="eg-wins-text">wins RUSH</span>` : '<span class="eg-wins-text">RUSH match ended</span>'}</div></div>${!winner ? '<div class="result-pending">Waiting for a confirmed winning team</div>' : ''}<div class="eg-teams">${resultTeam(game.ct, game, theme)}<div class="eg-divider"></div>${resultTeam(game.t, game, theme)}</div></section>`;
 }
-export function view(game, { show, status, preview, hidden, theme, results = false }) {
+export function view(game, { show, status, preview, hidden, theme, results = false, settings = {} }) {
   const p = game.observed;
-  return `<div class="stage ${hidden ? 'hidden' : ''}">
+  const tournament = [settings.tournament_name, settings.tournament_stage].filter(Boolean);
+  const stageClasses = [hidden ? 'hidden' : '', settings.disable_team_models ? 'models-disabled' : '', settings.use_advertisement ? 'advertisement-gap' : ''].filter(Boolean).join(' ');
+  return `<div class="stage ${stageClasses}">
     ${show && results ? resultScreen(game, theme) : ''}
-    <header data-key="scoreboard" id="matchbar">${teamHeader(game.ct, theme, 'left', show)}<div id="timer"><div id="round_now">${show ? escape(game.roundLabel) : 'RUSH'}</div><div id="round_timer_text">${show ? game.time : '—:—'}</div></div>${teamHeader(game.t, theme, 'right', show)}</header>
+    <header data-key="scoreboard" id="matchbar" class="${settings.compact_matchbar && game.phase === 'live' ? 'compact-rush' : ''}">${teamHeader(game.ct, theme, 'left', show)}<div id="timer"><div id="round_now">${show ? escape(game.roundLabel) : 'RUSH'}</div><div id="round_timer_text">${show ? game.time : '—:—'}</div></div>${teamHeader(game.t, theme, 'right', show)}${tournament.length ? `<div id="tournament_info" class="show"><span class="tournament_name">${escape(settings.tournament_name || '')}</span>${tournament.length > 1 ? '<span class="tournament_separator">·</span>' : ''}<span class="tournament_stage">${escape(settings.tournament_stage || '')}</span></div>` : ''}</header>
     <div data-key="phase" class="rush-phase">RUSH ${show ? stat(game.ct.alive) : '—'}V${show ? stat(game.t.alive) : '—'} · ${show ? escape(phases[game.phase] || game.phase.replaceAll('_', ' ')) : 'AWAITING FEED'}</div>
+    ${show ? (game.phase === 'over' ? roundWin(game, theme) : '') + interruption(game, theme) : ''}
+    ${show && game.phase === 'freezetime' ? `<div class="matchbar-team-panels">${utilityPanel(game.ct, theme, 'left')}<div class="matchbar-panel-spacer"></div>${utilityPanel(game.t, theme, 'right')}</div>` : ''}
     ${status ? `<div data-key="status" class="status">${escape(status)}</div>` : ''}
     ${preview ? '<div data-key="preview" class="preview-tag">PREVIEW · SYNTHETIC TEST DATA</div>' : ''}
     ${show ? roster(game.ct, theme, 'left') + roster(game.t, theme, 'right') : ''}
-    ${show && p ? `<section data-key="observed" class="observed ${p.side}">${killCard(p, theme)}<div class="avatar_container"><div class="avatar"><img src="${escape(theme.observedPortraits[p.side])}" alt=""></div></div><div class="main_container"><div class="health_armor_container"><div class="health_armor_icon">${p.armor > 0 ? icon(p.helmet ? 'helmet' : 'armor', theme) : ''}</div><div class="health_value">${stat(p.health)}</div></div><div class="info_container"><strong class="username fit-text" data-min-size="12">${escape(p.name)}</strong></div><div class="weapon_container"><div class="ammo_container"><div class="ammo_values"><span class="clip">${stat(p.ammo)}</span><span class="divider">/</span><span class="reserve">${stat(p.reserve)}</span></div><span class="ammo_icon">${icon('bullets', theme)}</span></div></div></div><div class="health_bar_container"><div class="health-bar-red" style="width:${hp(p)}%"></div><div class="health_bar_bg" style="width:${hp(p)}%"></div></div><div class="observed-weapon">${weapon(p.weaponId, p.weapon, theme)}</div></section>` : ''}
+    ${show && p ? `<section data-key="observed" class="observed ${p.side}">${killCard(p, theme)}<div class="avatar_container"><div class="avatar"><img src="${escape(theme.observedPortraits[p.side])}" alt=""></div></div><div class="main_container"><div class="health_armor_container"><div class="health_armor_icon">${p.armor > 0 ? icon(p.helmet ? 'helmet' : 'armor', theme) : ''}</div><div class="health_value">${stat(p.health)}</div></div><div class="info_container"><strong class="username fit-text" data-min-size="12">${escape(p.name)}</strong></div><div class="weapon_container"><div class="ammo_container"><div class="ammo_values"><span class="clip">${stat(p.ammo)}</span><span class="divider">/</span><span class="reserve">${stat(p.reserve)}</span></div><span class="ammo_icon">${icon('bullets', theme)}</span></div></div></div><div class="health_bar_container"><div class="health-bar-red" style="width:${hp(p)}%"></div><div class="health_bar_bg" style="width:${hp(p)}%"></div></div><div class="observed-inventory">${p.equipment.map(item => `<span class="${item.active ? 'active' : ''}">${weapon(item.id, item.name, theme)}</span>`).join('')}${p.grenades.map(item => `<span>${weapon(item.id, item.name, theme)}</span>`).join('')}</div></section>` : ''}
   </div>`;
 }

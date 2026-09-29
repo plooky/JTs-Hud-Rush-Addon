@@ -44,11 +44,14 @@ body { color: #fff; }
 .T .stat-item .hud-icon { color: var(--color-t); }
 .teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-info-section .money { font-size: 17px; white-space: nowrap; }
 .teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-weapons-section { height: 30px; }
-.main-weapon-container { width: 56%; min-width: 0; }
-.main-weapon-container img { width: 100%; height: 21px; object-position: left; }
+.equipment-strip { width: 58%; min-width: 0; display: flex; align-items: center; gap: 3px; overflow: hidden; }
+.equipment-strip span { min-width: 0; flex: 1; display: flex; align-items: center; }
+.equipment-strip img { width: 100%; height: 21px; object-position: left; opacity: .72; }
+.equipment-strip .active img { opacity: 1; }
 .grenade-strip { height: 20px; }
-.grenade-strip span { width: 16px; display: flex; align-items: center; }
+.grenade-strip span { width: 16px; display: flex; align-items: center; position: relative; }
 .grenade-strip img { width: 100%; height: 20px; }
+.grenade-strip b { position: absolute; right: -2px; bottom: -2px; font-size: 9px; line-height: 1; text-shadow: 0 1px 2px #000; }
 .grenade-strip .active { filter: drop-shadow(0 0 3px #48ff00); }
 .weapon-fallback { display: block; max-height: 24px; font-size: 14px; line-height: 1; }
 .teambox.layout-horizontal .player-horizontal-card.vertical-flow .damage-indicator { opacity: 0; animation: none; top: -66px; left: 4px; }
@@ -78,6 +81,35 @@ body { color: #fff; }
 .observed .health-bar-red { position: absolute; left: 0; top: 0; height: 100%; background: #ff4d4d; transition: width .6s ease-out 1.5s; }
 .observed-weapon { height: 24px; margin-top: 6px; display: flex; justify-content: center; filter: drop-shadow(0 1px 3px #000); }
 .observed-weapon img { width: 90px; height: 22px; }
+.observed-inventory { height: 28px; margin-top: 6px; display: flex; justify-content: center; gap: 7px; }
+.observed-inventory span { width: 48px; height: 24px; display: flex; align-items: center; justify-content: center; opacity: .65; }
+.observed-inventory span.active { opacity: 1; filter: drop-shadow(0 0 4px #fff8); }
+.observed-inventory img { max-width: 48px; height: 22px; }
+.matchbar-team-panels { top: 128px; width: 1200px; }
+.team-econ-panel { width: 430px; padding: 9px 12px; }
+.team-econ-panel .team-econ-header { min-height: 31px; }
+.team-econ-panel .title { font-size: 12px; letter-spacing: 1px; white-space: nowrap; }
+.utility-summary-row { justify-content: flex-end; }
+.team-econ-panel.right .utility-summary-row { justify-content: flex-start; }
+.utility-item-icon { width: 34px; height: 26px; display: flex; align-items: center; }
+.utility-item-icon .weapon { width: 30px; height: 25px; }
+.utility-item strong { font-size: 15px; }
+.utility-none { color: #aaa; font-size: 12px; }
+.win_announcement { top: 146px; width: 360px; min-height: 96px; height: auto; padding: 8px 0; }
+.win_announcement .win_content .win_text_container { min-width: 0; flex: 1; }
+.win_announcement .win_content .win_text_container .team_name { font-size: 24px; line-height: 1.05; max-height: 56px; overflow: hidden; }
+#pause, #timeout { z-index: 30; }
+#pause .pause-icon { color: #fff; font: 800 27px/1 Oswald, sans-serif; letter-spacing: -5px; padding-right: 5px; }
+#tournament_info { z-index: -1; }
+.advertisement-gap .observed { bottom: 150px; }
+.models-disabled .card-avatar-section .avatar, .models-disabled .observed .avatar_container { visibility: hidden; }
+.models-disabled .player-horizontal-card.vertical-flow { margin-top: 8px !important; }
+.models-disabled .player-horizontal-card.vertical-flow .card-avatar-section { height: 16px !important; }
+.compact-rush { width: 900px !important; }
+.compact-rush .team { width: 354px !important; }
+.compact-rush .team-name { width: 196px !important; }
+.compact-rush .team .logo { width: 70px !important; }
+.compact-rush .score-container { width: 88px !important; }
 .weapon.tint { filter: brightness(0) invert(1); }
 .eg-overlay { gap: 32px; }
 .eg-header { max-width: 1800px; }

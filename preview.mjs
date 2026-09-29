@@ -26,13 +26,16 @@ stressFixture.map.team_ct.name = 'Counter-Terrorists International';
 stressFixture.map.team_t.name = 'THE EXTREMELY LONG TEAM NAME CLUB';
 stressFixture.map.team_ct.score = 7;
 stressFixture.map.team_t.score = 7;
+stressFixture.map.team_ct.timeouts_remaining = 1;
+stressFixture.map.team_t.timeouts_remaining = 2;
 for (const p of Object.values(stressFixture.allplayers)) {
   p.name = 'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW';
   p.state.money = 10000;
   p.state.flashed = 255;
   p.match_stats = { kills: 100, assists: 100, deaths: 100 };
-  p.weapons.weapon_1 = { name: 'weapon_incgrenade', type: 'Grenade', state: 'holstered' };
-  p.weapons.weapon_2 = { name: 'weapon_smokegrenade', type: 'Grenade', state: 'holstered' };
-  p.weapons.weapon_3 = { name: 'weapon_flashbang', type: 'Grenade', state: 'holstered' };
+  p.weapons.weapon_1 = { name: 'weapon_incgrenade', type: 'Grenade', state: 'holstered', ammo_reserve: 1 };
+  p.weapons.weapon_2 = { name: 'weapon_smokegrenade', type: 'Grenade', state: 'holstered', ammo_reserve: 1 };
+  p.weapons.weapon_3 = { name: 'weapon_flashbang', type: 'Grenade', state: 'holstered', ammo_reserve: 2 };
+  p.weapons.weapon_4 = { name: 'weapon_glock', type: 'Pistol', state: 'holstered', ammo_clip: 20, ammo_reserve: 120 };
 }
 stressFixture.allplayers.ct1.name = '玩家測試很長的名稱玩家測試很長的名稱';

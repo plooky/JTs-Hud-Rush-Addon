@@ -75,6 +75,28 @@ test('round kill cards use reported round kills, not cumulative match kills', ()
   assert.equal(game.observed.weaponId, 'awp');
 });
 
+test('round winner, timeouts, equipment and utility use only reported fields', () => {
+  const raw = structuredClone(fixture);
+  raw.phase_countdowns.phase = 'over';
+  raw.round = { phase: 'over', win_team: 'T' };
+  raw.map.team_ct.timeouts_remaining = 1;
+  raw.allplayers.ct1.weapons.weapon_1 = { name: 'weapon_flashbang', type: 'Grenade', state: 'holstered', ammo_reserve: 2 };
+  raw.allplayers.ct1.weapons.weapon_2 = { name: 'weapon_usp_silencer', type: 'Pistol', state: 'holstered', ammo_clip: 12, ammo_reserve: 24 };
+  const game = normalize(raw);
+  assert.equal(game.roundWinner, 'T');
+  assert.equal(game.ct.timeoutsRemaining, 1);
+  assert.equal(game.ct.utility.flashbang, 2);
+  assert.deepEqual(game.ct.players[0].grenades.map(item => item.name), ['Flash']);
+  assert.deepEqual(game.ct.players[0].equipment.map(item => item.name), ['M4A1-S', 'USP-S']);
+  delete raw.round.win_team;
+  delete raw.map.team_ct.timeouts_remaining;
+  delete raw.allplayers.ct1.weapons.weapon_1.ammo_reserve;
+  const missing = normalize(raw);
+  assert.equal(missing.roundWinner, null);
+  assert.equal(missing.ct.timeoutsRemaining, null);
+  assert.equal(missing.ct.utility, null);
+});
+
 test('winner requires gameover and a conclusive result, including the RUSH tiebreak', () => {
   const map = { mode: 'rush', phase: 'gameover', round: 14, team_ct: { score: 8 }, team_t: { score: 7 } };
   assert.equal(rushWinner({ map }), 'CT');

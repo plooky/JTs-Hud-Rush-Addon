@@ -27,12 +27,12 @@ End users do not need Node.js or a separate addon server. Keep the manager's def
 
 ## Displayed data
 
-The animated end-of-match screen appears three seconds after CS2 reports gameover, showing the winning team, final scores and player K/A/D. It stays while connected until the next game state. An unresolved result is labeled as waiting for a confirmed winner. See [default HUD feature parity](FEATURE-PARITY.md) for remaining differences and data requirements.
+The animated end-of-match screen appears three seconds after CS2 reports gameover, showing the winning team, final scores and player K/A/D. It stays while connected until the next game state. An unresolved result is labeled as waiting for a confirmed winner. The HUD also shows explicit round-win announcements, pause and team-timeout panels, reported timeout counts, and team utility totals during the buy phase. See [default HUD feature parity](FEATURE-PARITY.md) for remaining differences and data requirements.
 
 - Three-player CT/T rosters, reported team scores, game phase and countdown.
 - The label beneath the scoreboard shows live CT-versus-T survivors, such as `RUSH 2V3 · Live`, updating on deaths and respawns. Missing or stale data displays dashes.
 - RUSH rounds 1–14 and a **Tiebreak** label at 7–7. No competitive /24 counter, overtime sets, halftime or loss-bonus calculations.
-- Health, armor, money, active weapons, kills, assists and deaths.
+- Health, armor, money, active and carried weapons, grenades, kills, assists and deaths.
 - Observed-player highlighting and ammunition.
 - The default JT HUD's horizontal portrait cards, team logos, central observed-player portrait, weapon silhouettes, gradients, skull/death transitions and delayed red health trails. Floating damage numbers and score/observer transitions preserve their state across updates. Animations respect reduced-motion preferences. The top-right player counter is omitted.
 - Round-kill cards use reported `state.round_kills`, separately from cumulative match kills.
@@ -40,9 +40,11 @@ The animated end-of-match screen appears three seconds after CS2 reports gameove
 
 The 1440p layout follows the default HUD: a top-center scoreboard and bottom-center observer panel flanked by horizontal team cards. The cards are enlarged for readable 3v3 data, with 36px bottom spacing. Long names wrap and shrink within their panels. Portraits and weapon images preserve their aspect ratio. The center of gameplay stays clear.
 
+The manager's HUD panel provides tournament name/stage, CT and T colors, square corners, a compact live-round matchbar, model visibility, and extra advertisement spacing beneath the observed-player panel. Invalid color values fall back to the standard JT colors.
+
 ## Limits and troubleshooting
 
-**Retain CS2's native RUSH objective display.** Tower ownership, castle capture and room progression were absent from the captured GSI packets. The addon does not infer them from team scores. It also does not provide a custom radar or killfeed.
+**Retain CS2's native RUSH objective display.** The tower changes ownership when a player interacts with it, but that interaction and ownership state were absent from the captured GSI packets. The addon does not infer tower ownership from team scores, round winners or player positions. RUSH has no bomb/defuse UI. The addon also does not provide a custom radar or killfeed.
 
 Full-team data requires CS2 to send an `allplayers` roster. A player-view feed may omit it. If the HUD is waiting, check that CS2 is in RUSH, that you are observing, and that the manager is receiving GSI updates. Restart CS2 after installing the GSI configuration. If the browser source cannot connect, check that the manager is running and the source uses its current address.
 

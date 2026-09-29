@@ -9,6 +9,8 @@ const preview = params.get('preview') === '1';
 let latest = null, received = 0, connected = false, hidden = false;
 let lastMarkup = '', previousGame = null;
 let gameoverSince = null;
+let settings = {};
+const damageTotals = new Map();
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let theme;
 try { theme = await loadDefaultTheme(); }
@@ -27,7 +29,7 @@ function render() {
   if (show && game.phase === 'gameover') gameoverSince ??= performance.now();
   else gameoverSince = null;
   const results = gameoverSince !== null && performance.now() - gameoverSince >= 3000;
-  const html = view(game, { show, status, preview, hidden, theme, results });
+  const html = view(game, { show, status, preview, hidden, theme, results, settings });
   if (html !== lastMarkup) {
     const damageText = new Map([...root.querySelectorAll('.player-horizontal-container')].map(node => [node.dataset.key, node.querySelector('.damage-indicator')?.textContent]));
     updateMarkup(root, html);
@@ -44,7 +46,11 @@ function render() {
       const card = [...root.querySelectorAll('.player-horizontal-container')].find(node => node.dataset.key === `player-${event.id}`);
       const badge = card?.querySelector('.damage-indicator');
       if (badge) {
-        badge.textContent = `−${event.damage}`;
+        const now = performance.now();
+        const prior = damageTotals.get(event.id);
+        const amount = prior && now - prior.at < 900 ? prior.amount + event.damage : event.damage;
+        damageTotals.set(event.id, { amount, at: now });
+        badge.textContent = `−${amount}`;
         badge.getAnimations().forEach(animation => animation.cancel());
         animate(badge, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)', offset: .2 }, { opacity: 1, transform: 'translateY(0)', offset: .8 }, { opacity: 0, transform: 'translateY(10px)' }], { duration: 1200, easing: 'ease-out' });
       }
@@ -58,6 +64,12 @@ function render() {
     previousGame = show ? game : null;
   }
   root.style.setProperty('--scale', Math.min(innerWidth / 2560, innerHeight / 1440));
+  const color = (value, fallback) => /^#[0-9a-f]{6}$/i.test(value || '') ? value : fallback;
+  root.style.setProperty('--color-ct', color(settings.ct_color, '#00bfff'));
+  root.style.setProperty('--color-t', color(settings.t_color, '#f4c628'));
+  root.style.setProperty('--color-ct-dark', `color-mix(in srgb, ${color(settings.ct_color, '#00bfff')} 38%, #121214)`);
+  root.style.setProperty('--color-t-dark', `color-mix(in srgb, ${color(settings.t_color, '#f4c628')} 38%, #121214)`);
+  root.style.setProperty('--radius', settings.sharp_corners ? '0px' : '8px');
 }
 function accept(payload) {
   if (!payload || typeof payload !== 'object') return;
@@ -75,10 +87,14 @@ if (preview) {
   socket.on('connect', () => { connected = true; received = 0; socket.emit('started'); });
   socket.on('readyToRegister', () => socket.emit('register', 'rush-hud', false, 'cs2', 'DEFAULT'));
   socket.on('update', accept);
+  socket.on('hud_config', data => { settings = data?.display_settings && typeof data.display_settings === 'object' ? data.display_settings : {}; lastMarkup = ''; render(); });
   socket.on('disconnect', () => { connected = false; latest = null; received = 0; render(); });
   socket.on('connect_error', () => { connected = false; render(); });
   socket.on('refreshHUD', () => location.reload());
-  socket.on('hud_action', data => { if (data?.action === 'boxesState') hidden = data.data === 'hide'; });
+  socket.on('hud_action', data => {
+    if (data?.action === 'boxesState') hidden = data.data === 'hide';
+    if (data?.action === 'display_settings' && data.data && typeof data.data === 'object') { settings = data.data; lastMarkup = ''; }
+  });
 } else root.textContent = 'Open this HUD through JT Hud Manager.';
 setInterval(render, 100);
 render();
