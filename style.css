@@ -22,7 +22,7 @@ body { color: #fff; }
 #matchbar #round_now { font-size: 18px; }
 #matchbar #round_timer_text { font-size: 42px; line-height: 1.2; }
 .rush-phase { position: absolute; top: 124px; left: 50%; transform: translateX(-50%); color: #ddd; background: #121214e8; padding: 3px 14px; border-radius: 0 0 5px 5px; font-size: 13px; letter-spacing: 1px; }
-.status, .preview-tag { position: absolute; top: 166px; left: 50%; transform: translateX(-50%); padding: 7px 16px; background: #121214ed; border-radius: 4px; font-size: 16px; text-align: center; }
+.status, .preview-tag { position: absolute; top: 166px; left: 50%; transform: translateX(-50%); padding: 7px 16px; background: #121214ed; border-radius: 4px; font-size: 16px; text-align: center; animation: hud-pop-in .4s cubic-bezier(.22,1,.36,1) both; }
 .preview-tag { top: 210px; background: #784013; letter-spacing: 1px; }
 .teambox.layout-horizontal { bottom: 36px; gap: 10px; }
 .teambox.layout-horizontal.left { transform: translateX(-100%) translateX(-270px); }
@@ -46,11 +46,12 @@ body { color: #fff; }
 .teambox.layout-horizontal .player-horizontal-card.vertical-flow .card-weapons-section { height: 30px; }
 .equipment-strip { width: 58%; min-width: 0; display: flex; align-items: center; gap: 3px; overflow: hidden; }
 .equipment-strip span { min-width: 0; flex: 1; display: flex; align-items: center; }
-.equipment-strip img { width: 100%; height: 21px; object-position: left; opacity: .72; }
-.equipment-strip .active img { opacity: 1; }
+.equipment-strip img { width: 100%; height: 21px; object-position: left; opacity: .72; transition: opacity .25s ease, filter .25s ease, transform .25s ease; }
+.equipment-strip .active img { opacity: 1; transform: translateY(-1px) scale(1.05); }
 .grenade-strip { height: 20px; }
 .grenade-strip span { width: 16px; display: flex; align-items: center; position: relative; }
-.grenade-strip img { width: 100%; height: 20px; }
+.grenade-strip img { width: 100%; height: 20px; transition: filter .25s ease, transform .25s ease; }
+.grenade-strip .active img { transform: translateY(-2px) scale(1.12); }
 .grenade-strip b { position: absolute; right: -2px; bottom: -2px; font-size: 9px; line-height: 1; text-shadow: 0 1px 2px #000; }
 .grenade-strip .active { filter: drop-shadow(0 0 3px #48ff00); }
 .weapon-fallback { display: block; max-height: 24px; font-size: 14px; line-height: 1; }
@@ -105,11 +106,16 @@ body { color: #fff; }
 .models-disabled .card-avatar-section .avatar, .models-disabled .observed .avatar_container { visibility: hidden; }
 .models-disabled .player-horizontal-card.vertical-flow { margin-top: 8px !important; }
 .models-disabled .player-horizontal-card.vertical-flow .card-avatar-section { height: 16px !important; }
+.compact-rush, #matchbar, #matchbar .team, #matchbar .team-name, #matchbar .team .logo, #matchbar .score-container { transition: width .45s cubic-bezier(.4,0,.2,1), opacity .3s ease, transform .45s cubic-bezier(.4,0,.2,1); }
 .compact-rush { width: 900px !important; }
 .compact-rush .team { width: 354px !important; }
 .compact-rush .team-name { width: 196px !important; }
 .compact-rush .team .logo { width: 70px !important; }
 .compact-rush .score-container { width: 88px !important; }
+.win_announcement.hide, #pause.hide, #timeout.hide { opacity: 0; pointer-events: none; }
+.win_announcement.hide { transform: translate(-50%, -20px) scale(.96); }
+#pause.hide, #timeout.hide { top: 150px; transform: translate(-50%) scale(.96); }
+@keyframes hud-pop-in { from { opacity: 0; transform: translate(-50%, -12px) scale(.92); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
 .weapon.tint { filter: brightness(0) invert(1); }
 .eg-overlay { gap: 32px; }
 .eg-header { max-width: 1800px; }

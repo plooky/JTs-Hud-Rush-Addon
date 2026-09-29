@@ -35,6 +35,7 @@ The animated end-of-match screen appears three seconds after CS2 reports gameove
 - Health, armor, money, active and carried weapons, grenades, kills, assists and deaths.
 - Observed-player highlighting and ammunition.
 - The default JT HUD's horizontal portrait cards, team logos, central observed-player portrait, weapon silhouettes, gradients, skull/death transitions and delayed red health trails. Floating damage numbers and score/observer transitions preserve their state across updates. Animations respect reduced-motion preferences. The top-right player counter is omitted.
+- Element-level motion follows live events: the matchbar, player cards and observed panel enter in sequence; phase and survivor changes pulse; round changes flip the timer; scores pop; players animate on entry, death and revival; statistics, equipment and round-kill cards react to changes; and utility, round-win, pause and timeout panels animate both in and out. Routine countdown ticks do not restart animations.
 - Round-kill cards use reported `state.round_kills`, separately from cumulative match kills.
 - Waiting states for missing rosters and unavailable values. Old data clears after ten seconds without updates or immediately on disconnection.
 

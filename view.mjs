@@ -31,21 +31,20 @@ function playerCard(p, theme) {
   </article>`;
 }
 const utilityOrder = ['flashbang', 'smokegrenade', 'hegrenade', 'molotov', 'incgrenade'];
-function utilityPanel(team, theme, position) {
-  if (!team.utility) return '';
-  const items = utilityOrder.filter(id => (team.utility[id] || 0) > 0).map(id => `<span class="utility-item"><span class="utility-item-icon">${weapon(id, id, theme)}</span><strong>${team.utility[id]}</strong></span>`).join('');
-  return `<section class="team-econ-panel show ${team.side} ${position}"><div class="team-econ-header"><span class="title">TEAM UTILITY</span><div class="utility-summary-row ${team.side}">${items || '<span class="utility-none">None</span>'}</div></div></section>`;
+function utilityPanel(team, theme, position, visible) {
+  const items = utilityOrder.filter(id => (team.utility?.[id] || 0) > 0).map(id => `<span class="utility-item"><span class="utility-item-icon">${weapon(id, id, theme)}</span><strong>${team.utility[id]}</strong></span>`).join('');
+  return `<section data-key="utility-${team.side}" class="team-econ-panel ${visible ? 'show' : 'hide'} ${team.side} ${position}"><div class="team-econ-header"><span class="title">TEAM UTILITY</span><div class="utility-summary-row ${team.side}">${items || '<span class="utility-none">None reported</span>'}</div></div></section>`;
 }
 function roundWin(game, theme) {
-  if (!game.roundWinner) return '';
-  const team = game.roundWinner === 'CT' ? game.ct : game.t;
-  return `<section class="win_announcement show ${team.side}" aria-live="polite"><div class="win_content"><div class="team_logo_container"><img src="${escape(theme.logos[team.side])}" alt=""></div><div class="win_text_container"><strong class="team_name fit-text" data-min-size="18">${escape(team.name)}</strong><span class="win_caption">WINS THE ROUND!</span></div></div></section>`;
+  const visible = game.phase === 'over' && game.roundWinner;
+  const team = game.roundWinner === 'T' ? game.t : game.ct;
+  return `<section data-key="round-win" class="win_announcement ${visible ? 'show' : 'hide'} ${team.side}" aria-live="polite" aria-hidden="${visible ? 'false' : 'true'}"><div class="win_content"><div class="team_logo_container"><img src="${escape(theme.logos[team.side])}" alt=""></div><div class="win_text_container"><strong class="team_name fit-text" data-min-size="18">${escape(team.name)}</strong><span class="win_caption">WINS THE ROUND!</span></div></div></section>`;
 }
 function interruption(game, theme) {
-  if (game.phase === 'paused') return `<section id="pause" class="show"><div class="pause-content"><div class="pause-icon">Ⅱ</div><div class="pause-text-container"><strong class="pause-main-text">MATCH PAUSED</strong><span class="pause-sub-text">Waiting for play to resume</span></div></div></section>`;
-  if (!['timeout_ct', 'timeout_t'].includes(game.phase)) return '';
-  const team = game.phase === 'timeout_ct' ? game.ct : game.t;
-  return `<section id="timeout" class="show ${team.side}"><div class="timeout-header"><div class="team-logo-container"><img src="${escape(theme.logos[team.side])}" alt=""></div><div class="timeout-info"><strong class="timeout-title fit-text" data-min-size="14">${escape(team.name)} TIMEOUT</strong><span class="timeout-timer">${escape(game.time)}</span></div></div>${team.timeoutsRemaining === null ? '' : `<div class="timeout-footer"><span class="timeouts-remaining">${team.timeoutsRemaining} TIMEOUT${team.timeoutsRemaining === 1 ? '' : 'S'} REMAINING</span></div>`}</section>`;
+  const paused = game.phase === 'paused';
+  const timeout = ['timeout_ct', 'timeout_t'].includes(game.phase);
+  const team = game.phase === 'timeout_t' ? game.t : game.ct;
+  return `<section data-key="pause" id="pause" class="${paused ? 'show' : 'hide'}" aria-hidden="${paused ? 'false' : 'true'}"><div class="pause-content"><div class="pause-icon">Ⅱ</div><div class="pause-text-container"><strong class="pause-main-text">MATCH PAUSED</strong><span class="pause-sub-text">Waiting for play to resume</span></div></div></section><section data-key="timeout" id="timeout" class="${timeout ? 'show' : 'hide'} ${team.side}" aria-hidden="${timeout ? 'false' : 'true'}"><div class="timeout-header"><div class="team-logo-container"><img src="${escape(theme.logos[team.side])}" alt=""></div><div class="timeout-info"><strong class="timeout-title fit-text" data-min-size="14">${escape(team.name)} TIMEOUT</strong><span class="timeout-timer">${escape(game.time)}</span></div></div>${team.timeoutsRemaining === null ? '' : `<div class="timeout-footer"><span class="timeouts-remaining">${team.timeoutsRemaining} TIMEOUT${team.timeoutsRemaining === 1 ? '' : 'S'} REMAINING</span></div>`}</section>`;
 }
 function roster(team, theme, position) {
   return `<section data-key="roster-${team.side}" class="teambox layout-horizontal ${team.side} ${position}" aria-label="${escape(team.name)} roster">${team.players.map(p => playerCard(p, theme)).join('')}${Array.from({ length: Math.max(0, 3 - team.players.length) }, (_, i) => `<div data-key="empty-${i}" class="empty-player">Waiting for player</div>`).join('')}</section>`;
@@ -68,8 +67,8 @@ export function view(game, { show, status, preview, hidden, theme, results = fal
     ${show && results ? resultScreen(game, theme) : ''}
     <header data-key="scoreboard" id="matchbar" class="${settings.compact_matchbar && game.phase === 'live' ? 'compact-rush' : ''}">${teamHeader(game.ct, theme, 'left', show)}<div id="timer"><div id="round_now">${show ? escape(game.roundLabel) : 'RUSH'}</div><div id="round_timer_text">${show ? game.time : '—:—'}</div></div>${teamHeader(game.t, theme, 'right', show)}${tournament.length ? `<div id="tournament_info" class="show"><span class="tournament_name">${escape(settings.tournament_name || '')}</span>${tournament.length > 1 ? '<span class="tournament_separator">·</span>' : ''}<span class="tournament_stage">${escape(settings.tournament_stage || '')}</span></div>` : ''}</header>
     <div data-key="phase" class="rush-phase">RUSH ${show ? stat(game.ct.alive) : '—'}V${show ? stat(game.t.alive) : '—'} · ${show ? escape(phases[game.phase] || game.phase.replaceAll('_', ' ')) : 'AWAITING FEED'}</div>
-    ${show ? (game.phase === 'over' ? roundWin(game, theme) : '') + interruption(game, theme) : ''}
-    ${show && game.phase === 'freezetime' ? `<div class="matchbar-team-panels">${utilityPanel(game.ct, theme, 'left')}<div class="matchbar-panel-spacer"></div>${utilityPanel(game.t, theme, 'right')}</div>` : ''}
+    ${show ? roundWin(game, theme) + interruption(game, theme) : ''}
+    ${show ? `<div data-key="utility-panels" class="matchbar-team-panels">${utilityPanel(game.ct, theme, 'left', game.phase === 'freezetime' && !!game.ct.utility)}<div class="matchbar-panel-spacer"></div>${utilityPanel(game.t, theme, 'right', game.phase === 'freezetime' && !!game.t.utility)}</div>` : ''}
     ${status ? `<div data-key="status" class="status">${escape(status)}</div>` : ''}
     ${preview ? '<div data-key="preview" class="preview-tag">PREVIEW · SYNTHETIC TEST DATA</div>' : ''}
     ${show ? roster(game.ct, theme, 'left') + roster(game.t, theme, 'right') : ''}

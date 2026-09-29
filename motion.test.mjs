@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { changes } from './motion.mjs';
+import { changes, presentationChanges } from './motion.mjs';
 import { normalize } from './model.mjs';
 import { fixture } from './preview.mjs';
 
@@ -28,4 +28,29 @@ test('joining, reconnecting, missing health and round resets do not produce dama
   assert.deepEqual(changes(before, { ...after, ct: { ...after.ct, score: 3 } }), []);
   delete raw.allplayers.ct2.state.health;
   assert.deepEqual(changes(before, normalize(raw)), []);
+});
+
+test('presentation changes identify UI events without treating countdown ticks as events', () => {
+  const before = normalize(fixture);
+  assert.equal(presentationChanges(null, before).initial, true);
+  const tick = structuredClone(fixture);
+  tick.phase_countdowns.phase_ends_in = '42';
+  const quiet = presentationChanges(before, normalize(tick));
+  assert.equal(quiet.phase, false);
+  assert.equal(quiet.round, false);
+  assert.equal(quiet.players.some(player => player.stats || player.equipment || player.died), false);
+  const raw = structuredClone(fixture);
+  raw.phase_countdowns.phase = 'over';
+  raw.map.team_ct.score = 3;
+  raw.allplayers.ct2.state.health = 0;
+  raw.allplayers.ct2.state.money = 2000;
+  raw.allplayers.ct1.weapons.weapon_0.state = 'holstered';
+  raw.allplayers.ct1.weapons.weapon_1 = { name: 'weapon_usp_silencer', state: 'active', type: 'Pistol', ammo_clip: 12, ammo_reserve: 24 };
+  const events = presentationChanges(before, normalize(raw));
+  assert.equal(events.phase, true);
+  assert.deepEqual(events.scores, ['ct']);
+  assert.equal(events.alive, true);
+  assert.equal(events.players.find(player => player.id === 'ct2').died, true);
+  assert.equal(events.players.find(player => player.id === 'ct2').stats, true);
+  assert.equal(events.players.find(player => player.id === 'ct1').equipment, true);
 });

@@ -47,3 +47,32 @@ export function changes(previous, current) {
     return [{ id: p.id, damage: before.health - p.health, died: p.health === 0 }];
   });
 }
+
+export function presentationChanges(previous, current) {
+  const initial = !previous?.isRush && current?.isRush;
+  if (!current?.isRush) return { initial: false, players: [] };
+  const oldPlayers = new Map(previous?.isRush ? [...previous.ct.players, ...previous.t.players].map(p => [p.id, p]) : []);
+  const players = [...current.ct.players, ...current.t.players].map(player => {
+    const before = oldPlayers.get(player.id);
+    return {
+      id: player.id,
+      entered: !before,
+      died: !!before && before.health !== 0 && player.health === 0,
+      revived: !!before && before.health === 0 && (player.health ?? 0) > 0,
+      stats: !!before && ['kills', 'assists', 'deaths', 'money'].some(key => before[key] !== player[key]),
+      equipment: !!before && (before.weaponId !== player.weaponId || before.ammo !== player.ammo || before.reserve !== player.reserve || before.inventory.join('|') !== player.inventory.join('|')),
+      roundKills: !!before && before.roundKills !== player.roundKills
+    };
+  });
+  const comparable = previous?.isRush && previous.map === current.map;
+  return {
+    initial, players,
+    phase: comparable && previous.phase !== current.phase,
+    round: comparable && previous.round !== current.round,
+    observed: comparable && previous.observed?.id !== current.observed?.id,
+    observedVitals: comparable && current.observed && previous.observed?.id === current.observed.id && (previous.observed.health !== current.observed.health || previous.observed.armor !== current.observed.armor),
+    alive: comparable && (previous.ct.alive !== current.ct.alive || previous.t.alive !== current.t.alive),
+    scores: comparable ? ['ct', 't'].filter(side => previous[side].score !== current[side].score) : [],
+    teams: comparable && (previous.ct.name !== current.ct.name || previous.t.name !== current.t.name)
+  };
+}
