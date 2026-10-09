@@ -87,7 +87,14 @@ jobs:
               gh release create $releaseTag --title $releaseTitle --generate-notes
             }
           } elseif ($releaseTag -eq 'continuous') {
-            gh release edit $releaseTag --title $releaseTitle --prerelease --notes "Automated installer build from commit $env:GITHUB_SHA."
+            gh release edit $releaseTag --title $releaseTitle --target $env:GITHUB_SHA --prerelease --notes "Automated installer build from commit $env:GITHUB_SHA."
           }
           $installer = (Get-ChildItem .\dist\RUSH-Live-for-JT-Hud-v*-Setup.exe).FullName
+          $installerName = Split-Path -Leaf $installer
+          $releaseAssets = gh release view $releaseTag --json assets | ConvertFrom-Json
+          foreach ($asset in $releaseAssets.assets) {
+            if ($asset.name -like 'RUSH-Live-for-JT-Hud-v*-Setup.exe' -and $asset.name -ne $installerName) {
+              gh release delete-asset $releaseTag $asset.name --yes
+            }
+          }
           gh release upload $releaseTag .\dist\rush-hud.zip $installer .\dist\SHA256SUMS.txt --clobber
