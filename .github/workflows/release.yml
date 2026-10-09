@@ -1,0 +1,50 @@
+name: Release HUD assets
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify release version
+        if: github.ref_type == 'tag'
+        shell: pwsh
+        run: |
+          $version = (Get-Content .\hud.json -Raw | ConvertFrom-Json).version
+          if ($env:GITHUB_REF_NAME -ne "v$version") {
+            throw "Tag $env:GITHUB_REF_NAME does not match hud.json version $version."
+          }
+      - name: Build and test release assets
+        shell: pwsh
+        run: .\Build-RushHud.ps1
+      - name: Upload workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rush-hud-release-assets
+          path: |
+            dist/rush-hud.zip
+            dist/RUSH-Live-for-JT-Hud-v*-Setup.exe
+            dist/SHA256SUMS.txt
+      - name: Create or update GitHub release
+        if: github.ref_type == 'tag'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view $env:GITHUB_REF_NAME 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $env:GITHUB_REF_NAME --title "RUSH Live for JT Hud $env:GITHUB_REF_NAME" --generate-notes
+          }
+          $installer = (Get-ChildItem .\dist\RUSH-Live-for-JT-Hud-v*-Setup.exe).FullName
+          gh release upload $env:GITHUB_REF_NAME .\dist\rush-hud.zip $installer .\dist\SHA256SUMS.txt --clobber

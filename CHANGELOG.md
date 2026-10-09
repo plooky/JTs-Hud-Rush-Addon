@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.9.2
+
+- Add a versioned Windows setup executable that installs the HUD into JT Hud's custom-HUD folder and updates the RUSH Manager's bundled copy when present.
+- Preserve custom images, uploads, and `images.json` during executable updates and retain timestamped backups.
+- Build, test, checksum, and publish the executable with the ZIP on every tagged GitHub release.
+- Use the Manager's image fallback chain when an assigned team logo or player portrait cannot be loaded.
+
 ## 1.9.1
 
 - Keep weapon, knife, equipment and health-bar elements fixed when players shoot or perform other actions.

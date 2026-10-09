@@ -2,7 +2,7 @@
 
 A CS2 RUSH spectator HUD for [JT Hud Manager](https://github.com/JohnTimmermann/JTs-Hud), using the default JT HUD's visual theme with RUSH-specific statistics. Designed for a transparent 2560 × 1440 broadcast source. Install it as a custom HUD in the existing manager.
 
-[Download rush-hud.zip](https://github.com/plooky/JTs-Hud-Rush-Addon/releases/latest/download/rush-hud.zip) · [Releases and checksums](https://github.com/plooky/JTs-Hud-Rush-Addon/releases)
+[Download the Windows installer](https://github.com/plooky/JTs-Hud-Rush-Addon/releases/latest) · [Manual ZIP and checksums](https://github.com/plooky/JTs-Hud-Rush-Addon/releases)
 
 ![Synthetic six-player preview](https://raw.githubusercontent.com/plooky/JTs-Hud-Rush-Addon/main/docs/preview.png)
 
@@ -12,8 +12,8 @@ The screenshot uses labeled synthetic data.
 
 1. Install and run [JT Hud Manager](https://github.com/JohnTimmermann/JTs-Hud/releases). This addon was tested with its July 13, 2026 release.
 2. Use the manager's GSI installation setting to install its CS2 configuration, then restart CS2.
-3. Download **rush-hud.zip** from this project's release assets. GitHub's **Source code** ZIP is not the import package.
-4. In the manager's **HUDs** tab, import `rush-hud.zip` and launch **RUSH Live for JT Hud**.
+3. Download and run **RUSH-Live-for-JT-Hud-vX.Y.Z-Setup.exe** from this project's release assets. The installer updates both the normal JT Hud custom-HUD folder and the RUSH Manager's bundled HUD when it is installed. It preserves `images.json`, `assets/custom`, and `uploads`, and keeps the previous HUD folders as timestamped backups.
+4. Launch **RUSH Live for JT Hud** in the manager. For a manual install, download `rush-hud.zip` and import it in the manager's **HUDs** tab. GitHub's **Source code** ZIP is not the import package.
 5. Join a RUSH game as a spectator or through GOTV. Keep CS2 and JT Hud Manager running.
 6. For OBS or vMix on the same PC, add a browser source with width **2560**, height **1440**, and this default URL:
 
@@ -85,7 +85,7 @@ node --test assignments.test.mjs model.test.mjs motion.test.mjs radar.test.mjs t
 powershell -NoProfile -File .\Build-RushHud.ps1
 ```
 
-The build runs the tests and syntax check, then writes `dist/rush-hud.zip` and `dist/SHA256SUMS.txt`. To build and import into a running manager, use PowerShell 7:
+The build runs the HUD tests, compiles and exercises the Windows installer in a temporary directory, then writes `dist/rush-hud.zip`, `dist/RUSH-Live-for-JT-Hud-vX.Y.Z-Setup.exe`, and `dist/SHA256SUMS.txt`. Each `v*` tag runs `.github/workflows/release.yml`, which attaches those files to the corresponding GitHub release. To build and import the ZIP into a running manager, use PowerShell 7:
 
 ```powershell
 pwsh -NoProfile -File .\Build-RushHud.ps1 -Install

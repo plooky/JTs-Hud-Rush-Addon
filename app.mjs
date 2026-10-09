@@ -20,6 +20,16 @@ let theme;
 try { theme = await loadDefaultTheme(); }
 catch (error) { root.textContent = `${error.message}. Keep JT Hud Manager's default HUD installed, then refresh this source.`; throw error; }
 
+root.addEventListener('error', event => {
+  const image = event.target;
+  if (!image.matches?.('img[data-identity-image]')) return;
+  const src = image.getAttribute('src');
+  if (!src || theme.failedImages.has(src)) return;
+  theme.failedImages.add(src);
+  lastMarkup = '';
+  render();
+}, true);
+
 function animate(node, frames, options) {
   if (node && !reducedMotion.matches) node.animate(frames, options);
 }
