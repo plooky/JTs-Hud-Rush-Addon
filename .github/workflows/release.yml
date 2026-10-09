@@ -2,6 +2,8 @@ name: Release HUD assets
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -37,14 +39,29 @@ jobs:
             dist/RUSH-Live-for-JT-Hud-v*-Setup.exe
             dist/SHA256SUMS.txt
       - name: Create or update GitHub release
-        if: github.ref_type == 'tag'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view $env:GITHUB_REF_NAME 2>$null
+          if ($env:GITHUB_REF_TYPE -eq 'tag') {
+            $releaseTag = $env:GITHUB_REF_NAME
+            $releaseTitle = "RUSH Live for JT Hud $releaseTag"
+          } else {
+            $releaseTag = 'continuous'
+            $releaseTitle = 'Latest development build'
+            git tag -f $releaseTag $env:GITHUB_SHA
+            git push origin "refs/tags/$releaseTag" --force
+          }
+
+          gh release view $releaseTag 2>$null
           if ($LASTEXITCODE -ne 0) {
-            gh release create $env:GITHUB_REF_NAME --title "RUSH Live for JT Hud $env:GITHUB_REF_NAME" --generate-notes
+            if ($releaseTag -eq 'continuous') {
+              gh release create $releaseTag --title $releaseTitle --prerelease --target $env:GITHUB_SHA --notes "Automated installer build from commit $env:GITHUB_SHA."
+            } else {
+              gh release create $releaseTag --title $releaseTitle --generate-notes
+            }
+          } elseif ($releaseTag -eq 'continuous') {
+            gh release edit $releaseTag --title $releaseTitle --prerelease --notes "Automated installer build from commit $env:GITHUB_SHA."
           }
           $installer = (Get-ChildItem .\dist\RUSH-Live-for-JT-Hud-v*-Setup.exe).FullName
-          gh release upload $env:GITHUB_REF_NAME .\dist\rush-hud.zip $installer .\dist\SHA256SUMS.txt --clobber
+          gh release upload $releaseTag .\dist\rush-hud.zip $installer .\dist\SHA256SUMS.txt --clobber

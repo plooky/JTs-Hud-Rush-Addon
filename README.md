@@ -85,7 +85,7 @@ node --test assignments.test.mjs model.test.mjs motion.test.mjs radar.test.mjs t
 powershell -NoProfile -File .\Build-RushHud.ps1
 ```
 
-The build runs the HUD tests, compiles and exercises the Windows installer in a temporary directory, then writes `dist/rush-hud.zip`, `dist/RUSH-Live-for-JT-Hud-vX.Y.Z-Setup.exe`, and `dist/SHA256SUMS.txt`. Each `v*` tag runs `.github/workflows/release.yml`, which attaches those files to the corresponding GitHub release. To build and import the ZIP into a running manager, use PowerShell 7:
+The build runs the HUD tests, compiles and exercises the Windows installer in a temporary directory, then writes `dist/rush-hud.zip`, `dist/RUSH-Live-for-JT-Hud-vX.Y.Z-Setup.exe`, and `dist/SHA256SUMS.txt`. Every commit pushed to `main` runs `.github/workflows/release.yml` on GitHub's Windows runner and replaces the assets in the rolling **Latest development build** prerelease. Each `v*` tag publishes the same files in a permanent versioned release. To build and import the ZIP into a running manager, use PowerShell 7:
 
 ```powershell
 pwsh -NoProfile -File .\Build-RushHud.ps1 -Install
