@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.3
+
+- Replace the HUD-only self-extractor with a complete JTs Hud RUSH Manager Windows installer.
+- Build the full Electron/NSIS application on GitHub with the matching RUSH HUD bundled, including its desktop shortcut and Windows uninstall entry.
+- Keep the standalone HUD ZIP as the manual-install asset.
+
 ## 1.9.2
 
 - Add a versioned Windows setup executable that installs the HUD into JT Hud's custom-HUD folder and updates the RUSH Manager's bundled copy when present.

@@ -16,9 +16,17 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check out JT Hud RUSH Manager
+        uses: actions/checkout@v4
+        with:
+          repository: plooky/JTs-Hud-Rush-Manager
+          ref: cc0de7055501a317a7a423e0b663a1636a25e19d
+          path: _manager
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: _manager/package-lock.json
       - name: Verify release version
         if: github.ref_type == 'tag'
         shell: pwsh
@@ -30,6 +38,24 @@ jobs:
       - name: Build and test release assets
         shell: pwsh
         run: .\Build-RushHud.ps1
+      - name: Build complete Windows installer
+        shell: pwsh
+        run: |
+          $version = (Get-Content .\hud.json -Raw | ConvertFrom-Json).version
+          Remove-Item .\_manager\resources\rush-hud -Recurse -Force
+          Expand-Archive .\dist\rush-hud.zip .\_manager\resources\rush-hud
+          npm ci --prefix .\_manager
+          npm --prefix .\_manager run build:win -- --publish never
+          $managerInstaller = Get-ChildItem .\_manager\dist\*-setup.exe | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $managerInstaller) { throw 'Electron Builder did not produce a Windows setup executable.' }
+          $installer = Join-Path $PWD "dist\RUSH-Live-for-JT-Hud-v$version-Setup.exe"
+          Copy-Item $managerInstaller.FullName $installer
+          $archiveHash = (Get-FileHash .\dist\rush-hud.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          $installerHash = (Get-FileHash $installer -Algorithm SHA256).Hash.ToLowerInvariant()
+          Set-Content .\dist\SHA256SUMS.txt -Encoding ascii -Value @(
+            "$archiveHash  rush-hud.zip"
+            "$installerHash  $(Split-Path -Leaf $installer)"
+          )
       - name: Upload workflow artifacts
         uses: actions/upload-artifact@v4
         with:

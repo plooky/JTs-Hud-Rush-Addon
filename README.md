@@ -10,10 +10,10 @@ The screenshot uses labeled synthetic data.
 
 ## Install
 
-1. Install and run [JT Hud Manager](https://github.com/JohnTimmermann/JTs-Hud/releases). This addon was tested with its July 13, 2026 release.
-2. Use the manager's GSI installation setting to install its CS2 configuration, then restart CS2.
-3. Download and run **RUSH-Live-for-JT-Hud-vX.Y.Z-Setup.exe** from this project's release assets. The installer updates both the normal JT Hud custom-HUD folder and the RUSH Manager's bundled HUD when it is installed. It preserves `images.json`, `assets/custom`, and `uploads`, and keeps the previous HUD folders as timestamped backups.
-4. Launch **RUSH Live for JT Hud** in the manager. For a manual install, download `rush-hud.zip` and import it in the manager's **HUDs** tab. GitHub's **Source code** ZIP is not the import package.
+1. Download and run **RUSH-Live-for-JT-Hud-vX.Y.Z-Setup.exe** from this project's release assets. This is the complete Windows installer for **JTs Hud RUSH Manager**, with the matching RUSH HUD already bundled. It creates a desktop shortcut and a normal Windows uninstall entry.
+2. Launch **JTs Hud RUSH Manager** and use its GSI installation setting to install the CS2 configuration, then restart CS2.
+3. Select and launch **RUSH Live for JT Hud** in the Manager.
+4. For an existing compatible JT Hud Manager installation, `rush-hud.zip` remains available as a manual import. GitHub's **Source code** ZIP is not the import package.
 5. Join a RUSH game as a spectator or through GOTV. Keep CS2 and JT Hud Manager running.
 6. For OBS or vMix on the same PC, add a browser source with width **2560**, height **1440**, and this default URL:
 
@@ -85,7 +85,7 @@ node --test assignments.test.mjs model.test.mjs motion.test.mjs radar.test.mjs t
 powershell -NoProfile -File .\Build-RushHud.ps1
 ```
 
-The build runs the HUD tests, compiles and exercises the Windows installer in a temporary directory, then writes `dist/rush-hud.zip`, `dist/RUSH-Live-for-JT-Hud-vX.Y.Z-Setup.exe`, and `dist/SHA256SUMS.txt`. Every commit pushed to `main` runs `.github/workflows/release.yml` on GitHub's Windows runner and replaces the assets in the rolling **Latest development build** prerelease. Each `v*` tag publishes the same files in a permanent versioned release. To build and import the ZIP into a running manager, use PowerShell 7:
+The local build runs the HUD tests and writes `dist/rush-hud.zip` plus its checksum. Every commit pushed to `main` runs `.github/workflows/release.yml` on GitHub's Windows runner. The action inserts that exact ZIP into the tested JT Hud RUSH Manager source, builds the complete Electron/NSIS Windows installer, adds both hashes to `SHA256SUMS.txt`, and replaces the assets in the rolling **Latest development build** prerelease. Each `v*` tag publishes the same files in a permanent versioned release. To build and import the ZIP into a running manager, use PowerShell 7:
 
 ```powershell
 pwsh -NoProfile -File .\Build-RushHud.ps1 -Install
